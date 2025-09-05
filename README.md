@@ -21,6 +21,7 @@ cd frontend
 npm install
 npm run dev
 
+
 cd backend/MovieReviewAPI
 dotnet restore
 dotnet run
