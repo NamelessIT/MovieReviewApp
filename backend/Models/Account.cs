@@ -1,0 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MovieReviewApp.backend.Models
+{
+    [Table("account")]
+    public class Account
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public required string Role { get; set; }
+
+        // Navigation property for the one-to-one relationship with User
+        public required User User { get; set; }
+        
+        // Navigation property for the one-to-many relationship with Reviews
+        public List<Review>? Review { get; set; }
+    }
+}

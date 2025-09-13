@@ -1,0 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace MovieReviewApp.backend.Models
+{
+    public class Review
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public int AccountId { get; set; }
+        public int MovieId { get; set; }
+        public int Rating { get; set; }
+        public bool? Favorites { get; set; }
+        public string? Comment { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        
+        // Navigation properties for foreign keys
+        public required Account Accounts { get; set; }
+        public required Film Films { get; set; }
+    }
+}
