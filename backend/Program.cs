@@ -1,5 +1,7 @@
-using MovieReviewApp.Data;
+
 using Microsoft.EntityFrameworkCore;
+using MovieReviewApp.backend.Data;
+using MovieReviewApp.backend.Helper;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -11,11 +13,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+// Đăng ký dịch vụ Controllers
+builder.Services.AddControllers();
 
+builder.Services.AddRepositories(); // Đăng ký tất cả các repository
 var app = builder.Build();
-
-
-
 
 app.UseHttpsRedirection();
 app.UseRouting();

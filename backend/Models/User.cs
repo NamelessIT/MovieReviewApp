@@ -14,6 +14,7 @@ namespace MovieReviewApp.backend.Models
         public string? FullName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public bool isDeleted { get; set; } = false;
 
         // Navigation property for the one-to-one relationship with Account
         public required Account Account { get; set; }

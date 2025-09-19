@@ -14,7 +14,7 @@ namespace MovieReviewApp.backend.Models
         public string? Comment { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        
+        public bool isDeleted { get; set; } = false;
         // Navigation properties for foreign keys
         public required Account Accounts { get; set; }
         public required Film Films { get; set; }

@@ -13,8 +13,10 @@ namespace MovieReviewApp.backend.Models
         public string? Synopsis { get; set; }
         public string? PosterUrl { get; set; }
         public string? TrailerUrl { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+
+        public bool isDeleted { get; set; } = false;
 
         // Navigation property for the many-to-many relationships
         public List<FilmGenre> FilmGenres { get; set; } = [];

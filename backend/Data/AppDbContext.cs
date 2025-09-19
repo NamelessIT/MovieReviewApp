@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MovieReviewApp.backend.Models;
 // using MovieReviewApp.backend.Models;
-namespace MovieReviewApp.Data
+namespace MovieReviewApp.backend.Data
 {
     public class AppDbContext : DbContext
     { 
