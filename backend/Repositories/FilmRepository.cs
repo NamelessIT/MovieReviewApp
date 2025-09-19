@@ -9,14 +9,30 @@ namespace MovieReviewApp.backend.Repositories
         public FilmRepository(AppDbContext context) : base(context)
         {
         }
-        public override async Task<List<Film>> GetAllAsync()
+
+        public async Task<List<Film>> GetAllAsyncUser()
         {
             return await _context.Set<Film>()
             .Where(f => !f.isDeleted)
             .ToListAsync();
         }
+        
+        public async Task<List<Film>> SearchByNameAsync(string keyword)
+        {
+            return await _context.Set<Film>()
+                .Where(f => f.Title.Contains(keyword)) // admin thấy tất cả (kể cả bị xóa)
+                .ToListAsync();
+        }
 
-        public override async Task<Film> GetByIdAsync(int id)
+        public async Task<List<Film>> SearchByNameUserAsync(string keyword)
+        {
+            return await _context.Set<Film>()
+                .Where(f => f.Title.Contains(keyword) && !f.isDeleted) // user chỉ thấy film chưa xóa
+                .ToListAsync();
+        }
+
+
+        public async Task<Film> GetByIdAsyncUser(int id)
         {
             var film = await _context.Set<Film>()
             .Where(f => f.Id == id && !f.isDeleted)

@@ -14,17 +14,51 @@ namespace backend.Controllers
             _filmRepository = filmRepository;
         }
 
-        [HttpGet]
+        [HttpGet("admin/all")]
         public async Task<IActionResult> GetAllFilms()
         {
             var films = await _filmRepository.GetAllAsync();
             return Ok(new { message = "Get all film successfully", data = films ?? [], status = 200 });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllFilmsUser()
+        {
+            var films = await _filmRepository.GetAllAsyncUser();
+            return Ok(new { message = "Get all film user successfully", data = films ?? [], status = 200 });
+        }
+
+        [HttpGet("search/admin/{keyword}")]
+        public async Task<IActionResult> SearchFilmsAdmin(string keyword)
+        {
+            var films = await _filmRepository.SearchByNameAsync(keyword);
+            return Ok(new { message = "Search films (admin) successfully", data = films ?? [], status = 200 });
+        }
+
+        // User: tìm kiếm film theo tên
+        [HttpGet("search/{keyword}")]
+        public async Task<IActionResult> SearchFilmsUser( string keyword)
+        {
+            var films = await _filmRepository.SearchByNameUserAsync(keyword);
+            return Ok(new { message = "Search films (user) successfully", data = films ?? [], status = 200 });
+        }
+
+        [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetFilmById(int id)
         {
             var film = await _filmRepository.GetByIdAsync(id);
+            if (film == null)
+            {
+                var errorResponse = new { message = "Dữ liệu đầu vào không hợp lệ." };
+                return NotFound(errorResponse);
+            }
+            return  Ok(new { message = "Get all film successfully", data = film, status = 200 });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFilmByIdByUser(int id)
+        {
+            var film = await _filmRepository.GetByIdAsyncUser(id);
             if (film == null)
             {
                 var errorResponse = new { message = "Dữ liệu đầu vào không hợp lệ." };
