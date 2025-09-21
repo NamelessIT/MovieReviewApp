@@ -1,0 +1,46 @@
+:root 
+{
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 100px;
+}
+
+.justify-content-evenly {
+  justify-content: space-evenly !important;
+}
+/* sidebar admin */
+.nav-custom a {
+  color: white; /* Ví dụ: đổi sang màu vàng */
+}
+
+.nav-custom div:hover{
+  background-color: #343a40; /* Ví dụ: đổi sang màu xám đậm */
+}
+
+.nav-custom div:hover a{
+  color: #ffc107; /* Ví dụ: đổi sang màu vàng */
+}
+.sidebar {
+  height: 100vh;
+  padding: 15px;
+  padding-bottom: 0;
+  width: var(--sidebar-width);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-collapsed-width);
+  }
+  
+}
+.sidebar-item_active{
+  background-color: #343a40; /* Màu nền khi item được chọn */
+}
+
+.active {
+  background-color: #3089e2;
+}
+
+.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
