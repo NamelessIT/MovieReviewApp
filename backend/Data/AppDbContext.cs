@@ -1,3 +1,4 @@
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using MovieReviewApp.backend.Models;
 // using MovieReviewApp.backend.Models;
@@ -15,9 +16,10 @@ namespace MovieReviewApp.backend.Data
     public DbSet<Actor> Actors { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<RefeshToken> RefeshTokens { get; set; }
 
     // Các DbSet cho các bảng trung gian của mối quan hệ nhiều-nhiều
-    public DbSet<FilmGenre> FilmGenres { get; set; }
+        public DbSet<FilmGenre> FilmGenres { get; set; }
     public DbSet<FilmActor> FilmActors { get; set; }
     public DbSet<FilmDirector> FilmDirectors { get; set; }
 
@@ -65,8 +67,13 @@ namespace MovieReviewApp.backend.Data
             .WithMany(m => m.FilmDirectors)
             .HasForeignKey(md => md.DirectorId);
             
+        modelBuilder.Entity<RefeshToken>()
+            .HasOne(rt => rt.account)
+            .WithMany(u => u.RefeshTokens)
+            .HasForeignKey(rt => rt.AccountId);
+            
         // Cấu hình mối quan hệ 1-1 giữa User và Account
-        modelBuilder.Entity<Account>()
+            modelBuilder.Entity<Account>()
             .HasOne(a => a.User)
             .WithOne(u => u.Account)
             .HasForeignKey<Account>(a => a.UserId);

@@ -1,4 +1,6 @@
 // Located in your Data Access Layer project
+using backend.Repositories;
+using backend.Services;
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 namespace MovieReviewApp.backend.Helper
@@ -18,7 +20,9 @@ namespace MovieReviewApp.backend.Helper
             services.AddScoped<FilmActorRepository>();
             services.AddScoped<FilmDirectorRepository>();
             services.AddScoped<FilmGenreRepository>();
-                
+            services.AddScoped<AuthRepository>();
+            services.AddScoped<TokenService>();
+            services.AddScoped<AuthService>();    
 
             return services;
         }

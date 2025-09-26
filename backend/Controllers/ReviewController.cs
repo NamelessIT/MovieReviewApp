@@ -1,8 +1,10 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/Review")]
     public class ReviewController : ControllerBase

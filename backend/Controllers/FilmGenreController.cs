@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;

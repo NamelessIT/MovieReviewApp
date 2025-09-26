@@ -1,8 +1,10 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
+    [Authorize(Roles = "admin")]
     [ApiController]
     [Route("api/account")]
     public class AccountController : ControllerBase

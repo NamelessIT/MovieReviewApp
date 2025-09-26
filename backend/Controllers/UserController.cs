@@ -1,8 +1,10 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/user")]
     public class UserController : ControllerBase
@@ -30,7 +32,7 @@ namespace backend.Controllers
                 var errorResponse = new { message = "Dữ liệu đầu vào không hợp lệ." };
                 return NotFound(errorResponse);
             }
-            return  Ok(new { message = "Get all user successfully", data = user, status = 200 });
+            return  Ok(new { message = "Get user successfully", data = user, status = 200 });
         }
 
         [HttpGet("search/{keyword}")]

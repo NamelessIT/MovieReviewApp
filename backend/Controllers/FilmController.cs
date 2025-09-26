@@ -1,6 +1,7 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
     [ApiController]
@@ -27,7 +28,7 @@ namespace backend.Controllers
             var films = await _filmRepository.GetAllAsyncUser();
             return Ok(new { message = "Get all film user successfully", data = films ?? [], status = 200 });
         }
-
+        [Authorize(Roles = "admin")]
         [HttpGet("search/admin/{keyword}")]
         public async Task<IActionResult> SearchFilmsAdmin(string keyword)
         {
@@ -42,7 +43,7 @@ namespace backend.Controllers
             var films = await _filmRepository.SearchByNameUserAsync(keyword);
             return Ok(new { message = "Search films (user) successfully", data = films ?? [], status = 200 });
         }
-
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetFilmById(int id)
         {

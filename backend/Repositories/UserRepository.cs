@@ -1,7 +1,6 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 namespace MovieReviewApp.backend.Repositories
 {
     public class UserRepository : GenericRepository<User>
@@ -9,12 +8,10 @@ namespace MovieReviewApp.backend.Repositories
         public UserRepository(AppDbContext context) : base(context)
         {
         }
-
-
         public async Task<List<User>> SearchByNameAsync(string keyword)
         {
             return await _context.Set<User>()
-                .Where(f => f.FullName.Contains(keyword)) 
+                .Where(f => f.FullName.Contains(keyword))
                 .ToListAsync();
         }
 
@@ -37,7 +34,7 @@ namespace MovieReviewApp.backend.Repositories
                 throw new KeyNotFoundException($"User with id {entity.Id} not found");
             }
             existingUser.UpdatedAt = DateTime.UtcNow;
-             _context.Entry(existingUser).State = EntityState.Modified;
+            _context.Entry(existingUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

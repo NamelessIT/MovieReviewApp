@@ -6,6 +6,7 @@ const AdminRoutes = () => {
       <Routes>
         <Route index element={<Navigate to ="/admin/homepage" replace />} />
         <Route path="/admin/homepage" element={<Homepage />} />
+        
       </Routes>
   );
 }; export default AdminRoutes;

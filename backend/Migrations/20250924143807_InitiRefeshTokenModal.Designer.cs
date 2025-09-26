@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieReviewApp.backend.Data;
 
@@ -11,9 +12,11 @@ using MovieReviewApp.backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250924143807_InitiRefeshTokenModal")]
+    partial class InitiRefeshTokenModal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,20 +33,12 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("tinyint(1)");
@@ -275,11 +270,18 @@ namespace backend.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("FullName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("tinyint(1)");
@@ -297,9 +299,6 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -313,9 +312,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("RefeshTokens");
                 });
@@ -418,19 +420,17 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.RefeshToken", b =>
                 {
-                    b.HasOne("MovieReviewApp.backend.Models.Account", "account")
+                    b.HasOne("MovieReviewApp.backend.Models.User", "User")
                         .WithMany("RefeshTokens")
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("account");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MovieReviewApp.backend.Models.Account", b =>
                 {
-                    b.Navigation("RefeshTokens");
-
                     b.Navigation("Review");
                 });
 
@@ -466,6 +466,8 @@ namespace backend.Migrations
                 {
                     b.Navigation("Account")
                         .IsRequired();
+
+                    b.Navigation("RefeshTokens");
                 });
 #pragma warning restore 612, 618
         }

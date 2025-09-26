@@ -2,6 +2,7 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using backend.DTOs;
 namespace MovieReviewApp.backend.Repositories
 {
     public class AccountRepository : GenericRepository<Account>
@@ -40,6 +41,14 @@ namespace MovieReviewApp.backend.Repositories
              _context.Entry(existingUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+        
+        public async Task<Account?> GetInfoLoginAsync(LoginDTO loginRequestDto)
+        {
+            var account = await _context.Set<Account>()
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(u => u.Username == loginRequestDto.Username && u.PasswordHash == loginRequestDto.Password && !u.isDeleted);
+            return account;
+        } 
     }
 
 }
