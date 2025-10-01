@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    var jwtSettings = builder.Configuration.GetSection("Jwt");  
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
     options.SaveToken = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -78,6 +78,18 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//Cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // URL frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddRepositories(); // Đăng ký tất cả các repository
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -90,6 +102,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("AllowFrontend");
 
 app.MapStaticAssets();
 

@@ -1,4 +1,5 @@
-import { Play, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Play, Plus, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
@@ -7,38 +8,74 @@ import { Card } from "@/components/ui/card"
  * @property {number} id
  * @property {string} title
  * @property {string} image
- * @property {string} year
- * @property {string} genre
- */
-
-const movies = [
-  { id: 1, title: "Avatar: The Way of Water", image: "/avatar-blue-alien-movie-poster.png", year: "2022", genre: "Sci-Fi" },
-  {
-    id: 2,
-    title: "Black Panther: Wakanda Forever",
-    image: "/black-panther-superhero-movie-poster.png",
-    year: "2022",
-    genre: "Action",
-  },
-  { id: 3, title: "Dune", image: "/dune-desert-sci-fi-movie-poster.png", year: "2021", genre: "Sci-Fi" },
-  { id: 4, title: "No Time to Die", image: "/james-bond-action-movie-poster.png", year: "2021", genre: "Action" },
-  { id: 5, title: "Top Gun: Maverick", image: "/top-gun-fighter-jet-movie-poster.png", year: "2022", genre: "Action" },
-]
-
-/**
- * @typedef {Object} MovieGridProps
- * @property {string} title
- * @property {boolean} [showViewAll]
+ * @property {number} year
+ * @property {string[]} genre
  */
 
 export function MovieGrid({ title, showViewAll = true }) {
+  const [movies, setMovies] = useState([])
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        // 1. Fetch all genres (not deleted)
+        const genreRes = await fetch("http://localhost:5003/api/genre/all-exist")
+        const genreJson = await genreRes.json()
+        const allGenres = genreJson.data || []
+
+        // 2. Fetch films by title
+        let filmEndpoint = ""
+        if (title === "Newest") {
+          filmEndpoint = "http://localhost:5003/api/Film/newest"
+        } else if (title === "What to watch") {
+          filmEndpoint = "http://localhost:5003/api/Film/top-rated"
+        }
+
+        const filmRes = await fetch(filmEndpoint)
+        const filmJson = await filmRes.json()
+        const films = filmJson.data || []
+
+        // 3. For each film, fetch its genres
+        const filmsWithGenres = await Promise.all(
+          films.map(async (film) => {
+            const fgRes = await fetch(`http://localhost:5003/api/FilmGenre/GetByFilmId/${film.id}`)
+            const fgJson = await fgRes.json()
+            const filmGenres = fgJson.data || []
+
+            // map GenreId -> Name, bỏ qua nếu genre bị ẩn
+            const genreNames = filmGenres
+              .map((fg) => {
+                const g = allGenres.find((gg) => gg.id === fg.genreId && !gg.isDeleted)
+                return g ? g.name : null
+              })
+              .filter(Boolean)
+
+            return {
+              id: film.id,
+              title: film.title,
+              image: film.posterUrl,
+              year: new Date(film.createdAt).getFullYear(),
+              genre: genreNames, // array of string
+            }
+          })
+        )
+
+        setMovies(filmsWithGenres)
+      } catch (err) {
+        console.error("Error fetching movies:", err)
+      }
+    }
+
+    fetchMovies()
+  }, [title])
+
   return (
     <section className="py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-foreground text-White">{title}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
           {showViewAll && (
-            <Button variant="outline" size="sm" className="view-all-button">
+            <Button variant="outline" size="sm">
               View All
             </Button>
           )}
@@ -48,7 +85,7 @@ export function MovieGrid({ title, showViewAll = true }) {
           {movies.map((movie) => (
             <Card
               key={movie.id}
-              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 background-black text-white cursor-pointer"
+              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 text-white cursor-pointer"
             >
               <div className="relative">
                 <img src={movie.image || "/placeholder.svg"} alt={movie.title} className="w-full h-72 object-cover" />
@@ -59,11 +96,7 @@ export function MovieGrid({ title, showViewAll = true }) {
                     <Button size="sm" className="bg-primary hover:bg-primary/90">
                       <Play className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-white text-white hover:bg-white/10 bg-transparent"
-                    >
+                    <Button size="sm" variant="outline" className="border-white text-white hover:bg-white/10">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -71,10 +104,14 @@ export function MovieGrid({ title, showViewAll = true }) {
               </div>
 
               <div className="p-4">
-                <h3 className="font-semibold text-card-foreground text-sm mb-1 line-clamp-2">{movie.title}</h3>
+                <div className="flex items-center space-x-1 mb-1">
+                  <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                  <span className="text-white font-medium">8.0</span>
+                </div>
+                <h3 className="font-semibold text-sm mb-1 line-clamp-2">{movie.title}</h3>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{movie.year}</span>
-                  <span>{movie.genre}</span>
+                  <span>{movie.genre.join(", ")}</span>
                 </div>
               </div>
             </Card>

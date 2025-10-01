@@ -10,6 +10,13 @@ namespace MovieReviewApp.backend.Repositories
         {
         }
 
+        public async Task<List<Genre>> GetAllAsyncExceptDeleted()
+        {
+            return await _context.Set<Genre>()
+                .Where(g => !g.isDeleted)
+                .ToListAsync();
+        }
+
         public async Task<Genre> GetByIdAsyncExceptDeleted(int id)
         {
             var genre = await _context.Set<Genre>()

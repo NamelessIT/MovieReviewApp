@@ -1,7 +1,7 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
+
 namespace MovieReviewApp.backend.Repositories
 {
     public class FilmRepository : GenericRepository<Film>
@@ -13,30 +13,29 @@ namespace MovieReviewApp.backend.Repositories
         public async Task<List<Film>> GetAllAsyncUser()
         {
             return await _context.Set<Film>()
-            .Where(f => !f.isDeleted)
-            .ToListAsync();
+                .Where(f => !f.isDeleted)
+                .ToListAsync();
         }
-        
+
         public async Task<List<Film>> SearchByNameAsync(string keyword)
         {
             return await _context.Set<Film>()
-                .Where(f => f.Title.Contains(keyword)) // admin thấy tất cả (kể cả bị xóa)
+                .Where(f => f.Title.Contains(keyword))
                 .ToListAsync();
         }
 
         public async Task<List<Film>> SearchByNameUserAsync(string keyword)
         {
             return await _context.Set<Film>()
-                .Where(f => f.Title.Contains(keyword) && !f.isDeleted) // user chỉ thấy film chưa xóa
+                .Where(f => f.Title.Contains(keyword) && !f.isDeleted)
                 .ToListAsync();
         }
-
 
         public async Task<Film> GetByIdAsyncUser(int id)
         {
             var film = await _context.Set<Film>()
-            .Where(f => f.Id == id && !f.isDeleted)
-            .FirstOrDefaultAsync();
+                .Where(f => f.Id == id && !f.isDeleted)
+                .FirstOrDefaultAsync();
             return film;
         }
 
@@ -59,8 +58,29 @@ namespace MovieReviewApp.backend.Repositories
                 throw new KeyNotFoundException($"Film with id {entity.Id} not found");
             }
             existingFilm.UpdatedAt = DateTime.UtcNow;
-             _context.Entry(existingFilm).State = EntityState.Modified;
+            _context.Entry(existingFilm).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        // 🟢 Lấy danh sách film mới nhất (CreatedAt giảm dần)
+        public async Task<List<Film>> GetNewestFilmsAsync(int limit = 10)
+        {
+            return await _context.Set<Film>()
+                .Where(f => !f.isDeleted)
+                .OrderByDescending(f => f.CreatedAt)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        // 🟢 Lấy danh sách film được xếp hạng cao nhất (nếu không có review thì trả về rỗng)
+        public async Task<List<Film>> GetTopRatedFilmsAsync(int limit = 10)
+        {
+            return await _context.Set<Film>()
+                .Where(f => !f.isDeleted && f.Reviews.Any()) // chỉ lấy film có review
+                .OrderByDescending(f => f.Reviews.Average(r => r.Rating))
+                .Take(limit)
+                .ToListAsync();
+        }
+
     }
 }

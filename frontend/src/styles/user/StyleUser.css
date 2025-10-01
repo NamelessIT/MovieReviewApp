@@ -126,7 +126,7 @@
     oklch(0.75 0.18 45) 0%,
     oklch(0.72 0.15 45) 50%,
     oklch(0.65 0.12 45) 100%
-  );
+  ) !important;
 }
 
 .text-White{
@@ -157,6 +157,22 @@
 
 .text-Orange:hover{
     color: orange !important;
+}
+
+.header-menu-btn {
+    border-radius: 8px;
+    background: none;
+    width: 20px;
+    margin: 0 5px;
+}
+
+.header .px-4 {
+    padding-right: 1.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+.header-menu-btn:hover{
+    background-color: orange !important;
 }
 
 .background-Orange:hover{
@@ -208,13 +224,103 @@
     background-color: orange !important;
 }
 
+
 .border-orange{
     border: 1px solid orange !important;
 }
+
+
+
+.btn-play{
+    width: 10%;
+    border-radius: 5px;
+    background-color: orange !important;
+}
+
+.btn-play:hover{
+    background-color: darkorange !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+    opacity: 0.8 !important;
+}
+
+.btn-plus{
+    width: 10%;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+.Overlay .px-4 {
+    padding-right: 1.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+.Overlay .flex{
+    display: flex;
+    justify-content: space-around;
+}
+
+.connect-footer .flex{
+    display: flex;
+    justify-content: center;
+}
+
+
+
+.btn-plus:hover{
+    background-color: white !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-plus:hover .plus{
+    color: #000000 !important;
+    
+    opacity: 0.8 !important;
+}
+
+.bg-card:hover .opacity-0{
+    opacity: 100% !important;
+}
+
 
 .image-celebrities{
     width: 50%;
     height: 50%;
     mask-image: radial-gradient(circle, black 50%, transparent 50%);
     object-fit: cover;
+}
+
+.bg-footer{
+    --bs-bg-opacity: 1;
+    background-color: #161414 !important;
+}
+
+.bg-icon-footer{
+    width: 100%;
+    margin-left: 10%;
+}
+
+.text-AlignCenter{
+    text-align: center !important;
+}
+
+.link-footer{
+    color: gray !important;
+    text-decoration: none !important;
+}
+
+.link-footer:hover{
+    color: orange !important;
+    text-decoration: underline !important;
+}
+
+.icon-footer{
+    color: gray !important;
+}
+
+.icon-footer:hover{
+    color: orange !important;
+    transform: scale(1.2);
+    transition: all 0.3s ease-in-out;
 }

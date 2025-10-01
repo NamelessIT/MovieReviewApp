@@ -18,7 +18,7 @@ export function HeroSection() {
         </div>
 
         {/* Movie Info */}
-        <div className="text-center lg:text-left space-y-6">
+        <div className=" lg:text-left space-y-6">
           <div className="space-y-2">
             <Badge variant="secondary" className="bg-black/20 text-white background-opacity-40">
               IT BEGINS

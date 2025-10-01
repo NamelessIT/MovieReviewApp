@@ -21,6 +21,14 @@ namespace backend.Controllers
             var genres = await _genreRepository.GetAllAsync();
             return Ok(new { message = "Get all genres successfully", data = genres ?? [], status = 200 });
         }
+
+        [HttpGet("all-exist")]
+        public async Task<IActionResult> GetAllGenresExceptDeleted()
+        {
+            var genres = await _genreRepository.GetAllAsyncExceptDeleted();
+            return Ok(new { message = "Get all genres except deleted successfully", data = genres ?? [], status = 200 });
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGenreById(int id)
         {
