@@ -36,7 +36,7 @@ namespace backend.Controllers
             return Ok(new { message = "Get total quantity film successfully", data = total, status = 200 });
         }
 
-        [Authorize(Roles = "admin")]
+        // [Authorize(Roles = "admin")]
         [HttpGet("search/admin/{keyword}")]
         public async Task<IActionResult> SearchFilmsAdmin(string keyword)
         {
@@ -51,7 +51,7 @@ namespace backend.Controllers
             var films = await _filmRepository.SearchByNameUserAsync(keyword);
             return Ok(new { message = "Search films (user) successfully", data = films ?? [], status = 200 });
         }
-        [Authorize(Roles = "admin")]
+        // [Authorize(Roles = "admin")]
         [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetFilmById(int id)
         {
