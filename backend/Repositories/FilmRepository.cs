@@ -82,5 +82,10 @@ namespace MovieReviewApp.backend.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> CountAllFilm()
+        {
+            return await _context.Set<Film>().CountAsync();
+        }
+    
     }
 }

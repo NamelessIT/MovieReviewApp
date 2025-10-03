@@ -33,8 +33,8 @@ export function Header() {
         {/* Search and User */}
         <div className="flex items-center space-x-3">
           <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground Left-0" />
-            <Input placeholder="Search movies..." className="pl-10 w-64 bg-secondary border-border" />
+            <Search className="absolute left-3 top-1/2 ms-1 transform -translate-y-1/2 h-4 w-4 text-muted-foreground Left-0" />
+            <Input placeholder="Search movies..." className="w-64 bg-secondary border-border ps-4" />
           </div>
           <Button variant="ghost" size="sm" className="background-normal background-Orange flex">
             <User className="h-5 w-5" />

@@ -37,5 +37,10 @@ namespace MovieReviewApp.backend.Repositories
             _context.Entry(existingUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountAllUsers()
+        {
+            return await _context.Set<User>().CountAsync();
+        }
     }
 }

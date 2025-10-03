@@ -28,6 +28,14 @@ namespace backend.Controllers
             var films = await _filmRepository.GetAllAsyncUser();
             return Ok(new { message = "Get all film user successfully", data = films ?? [], status = 200 });
         }
+
+        [HttpGet("admin/count")]
+        public async Task<IActionResult> GetCountAllUsers()
+        {
+            var total = await _filmRepository.CountAllFilm();
+            return Ok(new { message = "Get total quantity film successfully", data = total, status = 200 });
+        }
+
         [Authorize(Roles = "admin")]
         [HttpGet("search/admin/{keyword}")]
         public async Task<IActionResult> SearchFilmsAdmin(string keyword)
@@ -113,8 +121,8 @@ namespace backend.Controllers
             await _filmRepository.DeleteAsync(id);
             return NoContent();
         }
-        
-                // 🟢 API: Lấy danh sách film mới nhất
+
+        // 🟢 API: Lấy danh sách film mới nhất
         [HttpGet("newest")]
         public async Task<IActionResult> GetNewestFilms([FromQuery] int limit = 10)
         {
@@ -132,20 +140,20 @@ namespace backend.Controllers
             if (films == null || !films.Any())
             {
                 films = await _filmRepository.GetNewestFilmsAsync(limit);
-                return Ok(new { 
-                    message = "No top-rated films found. Returning newest films instead.", 
-                    data = films ?? [], 
-                    status = 200 
+                return Ok(new
+                {
+                    message = "No top-rated films found. Returning newest films instead.",
+                    data = films ?? [],
+                    status = 200
                 });
             }
 
-            return Ok(new { 
-                message = "Get top rated films successfully", 
-                data = films ?? [], 
-                status = 200 
+            return Ok(new
+            {
+                message = "Get top rated films successfully",
+                data = films ?? [],
+                status = 200
             });
         }
-
-
     }
 }

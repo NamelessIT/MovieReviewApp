@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api/Review")]
     public class ReviewController : ControllerBase
@@ -92,6 +92,27 @@ namespace backend.Controllers
             }
             await _reviewRepository.DeleteAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("admin/count")]
+        public async Task<IActionResult> GetCountAllReview()
+        {
+            var total = await _reviewRepository.CountAllReview();
+            return Ok(new { message = "Get total quantity review successfully", data = total, status = 200 });
+        }
+
+        [HttpGet("admin/GetAverageRatings")]
+        public async Task<IActionResult> GetAverageRatings()
+        {
+            var reviews = await _reviewRepository.GetAverageRatings();
+            return Ok(new { message = "Get Average Ratings successfully", data = reviews ?? [], status = 200 });
+        }
+
+        [HttpGet("admin/GetFilmReviewCounts")]
+        public async Task<IActionResult> GetFilmReviewCounts()
+        {
+            var reviews = await _reviewRepository.GetFilmReviewCounts();
+            return Ok(new { message = "Get Count Review Films successfully", data = reviews ?? [], status = 200 });
         }
 
     }

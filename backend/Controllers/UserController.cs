@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 namespace backend.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api/user")]
     public class UserController : ControllerBase
@@ -22,6 +22,14 @@ namespace backend.Controllers
             var films = await _userRepository.GetAllAsync();
             return Ok(new { message = "Get all user successfully", data = films ?? [], status = 200 });
         }
+
+        [HttpGet("admin/count")]
+        public async Task<IActionResult> GetCountAllUser()
+        {
+            var total = await _userRepository.CountAllUsers();
+            return Ok(new { message = "Get total quantity user successfully", data = total, status = 200 });
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
