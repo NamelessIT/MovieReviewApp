@@ -1,6 +1,10 @@
 import {Routes, Route, Navigate} from "react-router-dom";
 import Homepage from '../page/user/Homepage.jsx';
 import HomepageAdmin from '../page/admin/Homepage.jsx';
+import FilmAdmin from "../page/admin/Film.jsx";
+import AccountAdmin from "../page/admin/Account.jsx";
+import UserAdmin from "../page/admin/User.jsx";
+import ReviewAdmin from "../page/admin/Review.jsx";
 const UserRoutes = () => {
   return (
     
@@ -9,6 +13,10 @@ const UserRoutes = () => {
         <Route path="/user/homepage" element={<Homepage />} />
         {/* admin */}
         <Route path="/admin/homepage" element={<HomepageAdmin />} />
+        <Route path="/admin/films" element={<FilmAdmin />} />
+        <Route path="/admin/accounts" element={<AccountAdmin />} />
+        <Route path="/admin/users" element={<UserAdmin />} />
+        <Route path="/admin/Reviews" element={<ReviewAdmin />} />
       </Routes>
   );
 }; export default UserRoutes;
