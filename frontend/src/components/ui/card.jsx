@@ -14,3 +14,5 @@ export function CardContent({ children, className }) {
     </div>
   );
 }
+
+export default Card

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink} from "react-router-dom";
-
 const menuItems = [
   {
     id: 1,
