@@ -30,7 +30,7 @@ const Reviews = () => {
         setError(null);
 
         // 1) Reviews
-        const res = await fetch(`/api/Review/${encodeURIComponent(targetId)}`, { signal: ac.signal });
+        const res = await fetch(`api/Review/${encodeURIComponent(targetId)}`, { signal: ac.signal });
         if (!res.ok) throw new Error(`Failed to fetch reviews: ${res.status}`);
         const data = await res.json();
 

@@ -1,6 +1,7 @@
 using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Data;
 using Microsoft.EntityFrameworkCore;
+using backend.DTOs;
 
 namespace MovieReviewApp.backend.Repositories
 {
@@ -86,6 +87,37 @@ namespace MovieReviewApp.backend.Repositories
         {
             return await _context.Set<Film>().CountAsync();
         }
-    
+
+        public async Task<PaginatedResponse<FilmAdminDTO>> GetFilmAdminWithPagination(int pageNumber, int pageSize)
+        {
+            var totalFilms = await CountAllFilm();
+            var filmAdminDTO = await _context.Set<Film>()
+            // 1. Join với bảng Director
+                .Include(f => f.Director)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                // 2. Chuyển đổi sang DTO
+                .Select(f => new FilmAdminDTO
+                {
+                    Id = f.Id,
+                    Title = f.Title,
+                    ReleaseDate = f.ReleaseDate,
+                    DirectorId = f.DirectorId,
+                    DirectorName = f.Director != null ? f.Director.Name : "Unknown",
+                    Synopsis = f.Synopsis,
+                    PosterUrl = f.PosterUrl,
+                    TrailerUrl = f.TrailerUrl,
+                    CreatedAt = f.CreatedAt,
+                    UpdatedAt = f.UpdatedAt,
+                    isDeleted = f.isDeleted
+                })
+                 .ToListAsync();
+            return new PaginatedResponse<FilmAdminDTO>
+            {
+                Data = filmAdminDTO,
+                TotalPages = (int)Math.Ceiling((double)totalFilms / pageSize),
+                CurrentPage = pageNumber
+            };
+        }
     }
 }

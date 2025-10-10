@@ -1,153 +1,79 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect } from "react";
+import useFetchData from "../../hooks/useFetchData";
+import FilmsService from "../../service/admin/FilmService";
 import { LayoutWrapper } from "../../components/admin/LayoutWrapper";
-
+import Pagination from "../../components/pagination/Pagination";
+import { confirmDelete } from "../../components/common/Alert";
 const Films = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [films, setFilms] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState(""); 
+  //phân trang
+  const rowsPerPage = 6; // Mặc định 5 hàng mỗi trang
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại, bắt đầu từ 1
+  const [filterFilms, setFilterFilms] = useState([]); // dữ liệu phim
+  const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+  //lấy danh sách film và phân trang
+    const { data: response, loading: filmsLoading, error: filmsError } = useFetchData(
+      () => FilmsService.getAllFilmsWithPagination(currentPage, rowsPerPage),
+      [currentPage, rowsPerPage]
+    );
+  
+ 
+  const handlePageChange = (event) => {
+    // `event.selected` là index của trang (bắt đầu từ 0) do react-paginate cung cấp.
+    // Chúng ta cần +1 để nó khớp với state `currentPage` (bắt đầu từ 1).
+    setCurrentPage(event.selected + 1);
+  };
+  //load dữ liệu
+  const loadFilms = async () => {
+    try{;
+      setFilterFilms(response?.data);
+      setTotalPages(response?.data.totalPages || 1);
+    }catch(error){
+      console.error("Error loading films:", error);
+    }
+  }
+  //đổ dữ liệu khi có sự thay đổi
   useEffect(() => {
-    const ac = new AbortController();
+    loadFilms();
+  }, [response]);
 
-    const load = async () => {
+  //Xóa film
+  const onDelete = async (filmId) => {
       try {
-        setLoading(true);
-        setError(null);
-
-        // 1) Fetch all films
-        const res = await fetch("/api/film/admin/all", { signal: ac.signal });
-        if (!res.ok) throw new Error(`Failed to fetch films: ${res.status}`);
-        const data = await res.json();
-
-        // 2) Fetch directors (cache theo DirectorId)
-        const directorCache = new Map();
-
-        const getDirectorName = async (id) => {
-          if (!id) return "";
-          if (directorCache.has(id)) return directorCache.get(id);
-          const dRes = await fetch(`/api/director/${encodeURIComponent(id)}`, { signal: ac.signal });
-          if (!dRes.ok) {
-            directorCache.set(id, "");
-            return "";
-          }
-          const d = await dRes.json();
-          const name = d?.Name ?? "";
-          directorCache.set(id, name);
-          return name;
-        };
-
-        // 3) Map sang UI rows + resolve director song song
-        const rows = await Promise.all(
-          (Array.isArray(data) ? data : []).map(async (f) => {
-            const directorName = await getDirectorName(f.DirectorId);
-            return {
-              id: f.Id,
-              title: f.Title,
-              director: directorName,
-              releaseDate: f.ReleaseDate,
-              status: f.isDeleted ? "Inactive" : "Active",
-              createdAt: f.CreatedAt,
-              updatedAt: f.UpdatedAt,
-            };
-          })
-        );
-
-        setFilms(rows);
-        setCurrentPage(1);
-      } catch (e) {
-        if (e?.name !== "AbortError") setError(e?.message ?? "Unknown error");
-      } finally {
-        setLoading(false);
+        await FilmsService.delete(filmId);
+        loadFilms();
+        // Tải lại danh sách phim sau khi xóa
+      } catch (error) {
+        console.error("Error deleting film:", error);
       }
-    };
-
-    load();
-    return () => ac.abort();
-  }, []);
-
-  // ===== Filter + paginate (giống tinh thần Homepage: logic rõ ràng, UI bootstrap) =====
-  const filteredFilms = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-    return films.filter((film) => {
-      const matchesSearch =
-        !term ||
-        film.title?.toLowerCase().includes(term) ||
-        film.director?.toLowerCase().includes(term) ||
-        film.id?.toLowerCase().includes(term);
-      const matchesStatus =
-        statusFilter === "all" || film.status?.toLowerCase() === statusFilter.toLowerCase();
-      return matchesSearch && matchesStatus;
-    });
-  }, [films, searchTerm, statusFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredFilms.length / rowsPerPage));
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const pageFilms = filteredFilms.slice(startIndex, startIndex + rowsPerPage);
-
+  };
   return (
     <LayoutWrapper>
       <div className="container">
-        <h1 className="display-6 fw-bold mb-4">Films</h1>
-
         {/* Filter/Search card */}
         <div className="card border-0 shadow-sm mb-4">
+          <h1 className="fw-bold m-2">Quản lý danh sách phim</h1>       
           <div className="card-body">
-            <div className="row g-3 align-items-end">
-              <div className="col-12 col-md-6">
-                <label className="form-label">Search</label>
-                <div className="position-relative">
-                  <i
-                    className="bi bi-search position-absolute top-50 translate-middle-y text-muted"
-                    style={{ left: 10 }}
-                  />
-                  <input
-                    className="form-control ps-4"
-                    placeholder="Tìm kiếm theo tên phim, đạo diễn, ID…"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-6 col-md-3">
-                <label className="form-label">Status</label>
-                <select
-                  className="form-select"
-                  value={statusFilter}
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="position-relative" style={{ width: "300px" }}>
+                <i
+                  className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"
+                />
+                <input
+                  className="form-control ps-5"
+                  placeholder="Tìm kiếm theo tên phim..."
+                  value={searchTerm}
                   onChange={(e) => {
-                    setStatusFilter(e.target.value);
+                    setSearchTerm(e.target.value);
                     setCurrentPage(1);
                   }}
-                >
-                  <option value="all">All</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                />
               </div>
-
-              <div className="col-6 col-md-3">
-                <label className="form-label">Rows per page</label>
-                <select
-                  className="form-select"
-                  value={rowsPerPage}
-                  onChange={(e) => {
-                    setRowsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                </select>
+              <div>
+                <button className="btn btn-md btn-dark"  onClick={() => onAdd("add")}>
+                  <i className="bi bi-plus me-2"></i>
+                  Thêm phim mới
+                </button>
               </div>
             </div>
           </div>
@@ -157,11 +83,11 @@ const Films = () => {
         <div className="card border-0 shadow-sm">
           <div className="card-body">
             <h5 className="card-title fw-bold mb-3">Films List</h5>
-
-            {loading && <div className="text-muted small">Loading films…</div>}
-            {error && <div className="text-danger small">Error: {error}</div>}
-
-            {!loading && !error && (
+            {filmsLoading && (
+              <div className="text-muted small">Loading films…</div>
+            )}
+            {filmsError && <div className="text-danger small">Error: {filmsError}</div>}
+            {!filmsLoading && !filmsError && (
               <>
                 <div className="table-responsive">
                   <table className="table align-middle">
@@ -171,69 +97,60 @@ const Films = () => {
                         <th scope="col">Title</th>
                         <th scope="col">Director</th>
                         <th scope="col">Release Date</th>
-                        <th scope="col">Status</th>
+                        <th scope="col">IsDeleted</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
+                        <th scope="col" className="text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {pageFilms.map((film) => (
+                      {(filterFilms?.data || []).map((film) => (
                         <tr key={film.id}>
                           <td className="text-break">{film.id}</td>
                           <td>{film.title}</td>
-                          <td>{film.director}</td>
-                          <td>{film.releaseDate}</td>
+                          <td>{film.directorName}</td>
+                          <td>{film.releaseDate.substring(0, 10)}</td>
                           <td>
                             <span
                               className={
                                 "badge rounded-pill " +
-                                (film.status === "Active"
+                                (film.isDeleted.toString() === "false"
                                   ? "text-bg-success"
-                                  : "text-bg-secondary")
+                                  : "text-bg-danger")
                               }
                             >
-                              {film.status}
+                              {film.isDeleted.toString().toUpperCase()}
                             </span>
                           </td>
-                          <td>{film.createdAt}</td>
-                          <td>{film.updatedAt}</td>
+                          <td>{film.createdAt.substring(0, 10)}</td>
+                          <td>{film.updatedAt?.substring(0, 10)}</td>
+                          <td className="text-end">
+                              <div className="d-flex justify-content-evenly">
+                                  <button type="button" className="btn btn-primary" onClick={() => onEdit("edit")}>
+                                      <i className="bi bi-pencil"></i>
+                                  </button>
+                                  <div className="ps-2 border-secondary border-start ">
+                                      <button type="button" className="btn btn-danger" onClick={() => confirmDelete("Phim", film.id, () => onDelete(film.id))}>
+                                          <i className="bi bi-trash"></i>
+                                      </button>
+                                  </div>
+                              </div>
+                            </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                {pageFilms.length === 0 && (
+                {/* {filterFilms?.data.length === 0 && (
                   <div className="text-muted small">No films found.</div>
-                )}
-
+                )} */}
                 {/* Pagination */}
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                  <span className="text-muted small">
-                    {filteredFilms.length === 0
-                      ? "0-0 of 0"
-                      : `${startIndex + 1}-${Math.min(
-                          startIndex + rowsPerPage,
-                          filteredFilms.length
-                        )} of ${filteredFilms.length}`}
-                  </span>
-                  <div className="btn-group">
-                    <button
-                    className="btn btn-outline-secondary"
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}  // ← bớt 1 ')'
-                    disabled={currentPage === 1}
-                    >
-                    Prev
-                    </button>
-                    <button
-                    className="btn btn-outline-secondary"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}  // ← bớt 1 ')'
-                    disabled={currentPage === totalPages}
-                    >
-                    Next
-                    </button>
-                  </div>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </>
             )}
           </div>

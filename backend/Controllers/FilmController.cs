@@ -155,5 +155,16 @@ namespace backend.Controllers
                 status = 200
             });
         }
+        [HttpGet("admin/pagination")]
+        public async Task<IActionResult> GetFilmsWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
+            }
+
+            var films = await _filmRepository.GetFilmAdminWithPagination(pageNumber, pageSize);
+            return Ok(new { message = "Get films with pagination successfully", data = films ?? null, status = 200 });
+        }
     }
 }
