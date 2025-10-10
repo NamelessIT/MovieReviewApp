@@ -8,3 +8,5 @@ export function Button({ children, className = "", ...props }) {
     </button>
   );
 }
+
+export default Button

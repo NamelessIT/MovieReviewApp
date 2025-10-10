@@ -167,8 +167,20 @@
 }
 
 .header .px-4 {
-    padding-right: 1.5rem !important;
+    padding-right: 1.8rem !important;
     padding-left: 0.5rem !important;
+}
+
+.header-flex{
+    justify-content: space-between;
+}
+
+.header-input-width{
+    width: 120%;
+}
+
+.header-svg{
+    left: 0;
 }
 
 .header-menu-btn:hover{

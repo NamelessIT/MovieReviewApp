@@ -52,13 +52,13 @@ export function HeroSection() {
       </div>
 
       {/* Pagination dots */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      {/* <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
         <div className="w-3 h-3 rounded-full bg-white"></div>
         <div className="w-3 h-3 rounded-full bg-white/50"></div>
         <div className="w-3 h-3 rounded-full bg-white/50"></div>
         <div className="w-3 h-3 rounded-full bg-white/50"></div>
         <div className="w-3 h-3 rounded-full bg-white/50"></div>
-      </div>
+      </div> */}
     </section>
   )
 }
