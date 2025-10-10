@@ -9,39 +9,30 @@ const Films = () => {
   //phân trang
   const rowsPerPage = 6; // Mặc định 5 hàng mỗi trang
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại, bắt đầu từ 1
-  const [filterFilms, setFilterFilms] = useState([]); // dữ liệu phim
-  const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+  const [refetchIndex, setRefetchIndex] = useState(0);
   //lấy danh sách film và phân trang
-    const { data: response, loading: filmsLoading, error: filmsError } = useFetchData(
-      () => FilmsService.getAllFilmsWithPagination(currentPage, rowsPerPage),
-      [currentPage, rowsPerPage]
-    );
-  
- 
+  const { data: response, loading: filmsLoading, error: filmsError } = useFetchData(
+    () => FilmsService.getAllFilmsWithPagination(currentPage, rowsPerPage),
+    [currentPage, rowsPerPage, refetchIndex]
+  );
+  const filterFilms = response?.data || []; // dữ liệu phim
+  const totalPages = response?.data.totalPages || 1; // tổng số trang
   const handlePageChange = (event) => {
     // `event.selected` là index của trang (bắt đầu từ 0) do react-paginate cung cấp.
     // Chúng ta cần +1 để nó khớp với state `currentPage` (bắt đầu từ 1).
     setCurrentPage(event.selected + 1);
   };
-  //load dữ liệu
-  const loadFilms = async () => {
-    try{;
-      setFilterFilms(response?.data);
-      setTotalPages(response?.data.totalPages || 1);
-    }catch(error){
-      console.error("Error loading films:", error);
-    }
-  }
-  //đổ dữ liệu khi có sự thay đổi
-  useEffect(() => {
-    loadFilms();
-  }, [response]);
-
   //Xóa film
   const onDelete = async (filmId) => {
       try {
         await FilmsService.delete(filmId);
-        loadFilms();
+        setRefetchIndex(prevIndex => prevIndex + 1);
+        // setFilterFilms(filterFilms.map(film => 
+        //   film.id === filmId ? { ...film, isDeleted: true } : film
+        // ));
+        // setFilterFilms(
+        //   filterFilms.filter(film => film.id !== filmId)
+        // );
         // Tải lại danh sách phim sau khi xóa
       } catch (error) {
         console.error("Error deleting film:", error);
