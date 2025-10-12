@@ -2,7 +2,9 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using backend.DTOs.Review;
 namespace backend.Controllers
+
 {
     // [Authorize]
     [ApiController]
@@ -59,6 +61,34 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetReviewById), new { id = review.Id }, review);
         }
 
+        // ✅ 1. API: Cập nhật hoặc tạo Rating
+        [HttpPost("CreateRating")]
+        public async Task<IActionResult> CreateRating([FromBody] RatingRequest request)
+        {
+            if (request == null) return BadRequest("Invalid data.");
+            var review = await _reviewRepository.CreateReviewAsyncRating(request.AccountId, request.FilmId, request.Rating);
+            return Ok(review);
+        }
+
+        // ✅ 2. API: Cập nhật hoặc tạo Favorites
+        [HttpPost("CreateFavorites")]
+        public async Task<IActionResult> CreateFavorites([FromBody] FavoritesRequest request)
+        {
+            if (request == null) return BadRequest("Invalid data.");
+            var review = await _reviewRepository.CreateReviewAsyncFavorites(request.AccountId, request.FilmId, request.Favorites);
+            return Ok(review);
+        }
+
+        // ✅ 3. API: Cập nhật hoặc tạo Comment
+        [HttpPost("CreateComment")]
+        public async Task<IActionResult> CreateComment([FromBody] CommentRequest request)
+        {
+            if (request == null) return BadRequest("Invalid data.");
+            var review = await _reviewRepository.CreateReviewAsyncComment(request.AccountId, request.FilmId, request.Comment);
+            return Ok(review);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateReview(int id, [FromBody] Review review)
         {
@@ -114,6 +144,5 @@ namespace backend.Controllers
             var reviews = await _reviewRepository.GetFilmReviewCounts();
             return Ok(new { message = "Get Count Review Films successfully", data = reviews ?? [], status = 200 });
         }
-
     }
 }

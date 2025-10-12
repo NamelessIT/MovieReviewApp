@@ -148,6 +148,11 @@
 
 .background-black:hover{
     border: 1px solid orange !important;
+    opacity: 0.8;
+}
+
+.btn-plus:hover .color-black-hover{
+    color: black !important;
 }
 
 
@@ -204,7 +209,7 @@
 }
 
 .Watch-Trailer-Btn:hover{
-    opacity: 0.7 !important;
+    opacity: 0.5 !important;
 }
 
 .display-inline{
@@ -261,13 +266,12 @@
     border: 1px solid white;
     border-radius: 5px;
 }
-
-.Overlay .px-4 {
+.movieGrid .px-4 {
     padding-right: 1.5rem !important;
-    padding-left: 0.5rem !important;
+    padding-left: 0.6rem !important;
 }
 
-.Overlay .flex{
+.movieGrid .flex{
     display: flex;
     justify-content: space-around;
 }
@@ -275,6 +279,18 @@
 .connect-footer .flex{
     display: flex;
     justify-content: center;
+}
+
+
+
+.movieGrid-genre-hover:hover{
+    text-decoration: underline;
+    color: orange;
+    cursor:no-drop  ;
+}
+
+.movieGrid-year{
+    margin: 0 2px 0 0;
 }
 
 
@@ -302,6 +318,15 @@
     mask-image: radial-gradient(circle, black 50%, transparent 50%);
     object-fit: cover;
 }
+
+.image-celebrities {
+  transition: transform 0.3s ease;
+}
+
+.background-black:hover .image-celebrities {
+  transform: scale(1.05);
+}
+
 
 .bg-footer{
     --bs-bg-opacity: 1;

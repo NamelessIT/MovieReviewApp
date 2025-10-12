@@ -236,9 +236,6 @@ namespace backend.Migrations
                     b.Property<bool?>("Favorites")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("FilmsId")
-                        .HasColumnType("int");
-
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
@@ -255,7 +252,7 @@ namespace backend.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("FilmsId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Reviews");
                 });
@@ -399,21 +396,21 @@ namespace backend.Migrations
 
             modelBuilder.Entity("MovieReviewApp.backend.Models.Review", b =>
                 {
-                    b.HasOne("MovieReviewApp.backend.Models.Account", "Accounts")
+                    b.HasOne("MovieReviewApp.backend.Models.Account", "Account")
                         .WithMany("Review")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieReviewApp.backend.Models.Film", "Films")
+                    b.HasOne("MovieReviewApp.backend.Models.Film", "Film")
                         .WithMany("Reviews")
-                        .HasForeignKey("FilmsId")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Accounts");
+                    b.Navigation("Account");
 
-                    b.Navigation("Films");
+                    b.Navigation("Film");
                 });
 
             modelBuilder.Entity("backend.Models.RefeshToken", b =>

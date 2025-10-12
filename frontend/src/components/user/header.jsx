@@ -51,7 +51,7 @@ export function Header() {
         id: f.id,
         title: f.title,
         image: f.posterUrl,
-        synopsis: f.description,
+        synopsis: f.synopsis,
       }))
       setSearchResults(formatted)
     } catch (error) {

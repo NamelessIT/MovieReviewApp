@@ -133,27 +133,27 @@ export function MovieGrid({ title, showViewAll = true }) {
         </div>
 
         {/* Movie grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 ">
           {currentMovies.map((movie) => (
             <Card
               key={movie.id}
-              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300"
+              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 border-orange background-black "
             >
               <div className="relative">
                 <img src={movie.image || "/placeholder.svg"} alt={movie.title} className="w-full h-72 object-cover" />
 
                 {/* Overlay hover */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <div className="flex space-x-2">
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center movieGrid ">
+                  <div className=" flex space-x-2">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 btn-play  movieGrid px-4">
                       <Play className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white text-white hover:bg-white/10 bg-transparent"
+                      className="border-white text-white hover:bg-white/10 bg-transparent btn-plus movieGrid"
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus className="h-4 w-4 color-black-hover" />
                     </Button>
                   </div>
                 </div>
@@ -164,10 +164,10 @@ export function MovieGrid({ title, showViewAll = true }) {
                   <Star className="h-5 w-5 text-yellow-400 fill-current" />
                   <span className="text-white font-medium">8.0</span>
                 </div>
-                <h3 className="font-semibold text-sm mb-1 line-clamp-2">{movie.title}</h3>
+                <h3 className="font-semibold text-sm mb-1 line-clamp-2 text-White" >{movie.title}</h3>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{movie.year}</span>
-                  <span className="line-clamp-1">{movie.genre.join(", ")}</span>
+                  <span className="movieGrid-year">{movie.year}</span>
+                  <span className="line-clamp-1 movieGrid-genre-hover">{movie.genre.join(", ")}</span>
                 </div>
               </div>
             </Card>
