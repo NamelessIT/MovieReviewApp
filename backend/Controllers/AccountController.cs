@@ -2,6 +2,7 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using backend.DTOs;
 namespace backend.Controllers
 {
     // [Authorize(Roles = "admin")]
@@ -37,23 +38,24 @@ namespace backend.Controllers
         
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] Account account)
+        public async Task<IActionResult> CreateAccount([FromBody] AccountAdminDTO account)
         {
             if (account == null)
             {
                 return BadRequest();
             }
-            await _accountRepository.AddAsync(account);
+            await _accountRepository.CreateAccount(account);
             return CreatedAtAction(nameof(GetAccountById), new { id = account.Id }, account);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(int id, [FromBody] Account account)
+        public async Task<IActionResult> UpdateAccount(int id, [FromBody] AccountAdminDTO account)
         {
             try
             {
                 if (account == null)
                 {
+                    Console.WriteLine("Received null account object in UpdateAccount.");
                     return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ." });
                 }
                 var existingAccount = await _accountRepository.GetByIdAsync(id);
@@ -61,8 +63,7 @@ namespace backend.Controllers
                 {
                     return NotFound(new { message = "Account không tồn tại." });
                 }
-                account.Id = id; // Đảm bảo ID được đặt đúng
-                await _accountRepository.UpdateAsync(account);
+                await _accountRepository.UpdateAccount(id, account);
                 return Ok(new { message = "Account updated successfully", data = account, status = 200 });
             }
             catch (KeyNotFoundException ex)
@@ -74,6 +75,44 @@ namespace backend.Controllers
                 // Xử lý lỗi khác nếu cần
                 return StatusCode(500, new { message = "An error occurred while updating the account.", error = ex.Message });
             }
+        }
+
+        [HttpGet("admin/pagination")]
+        public async Task<IActionResult> GetFilmsWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? searchKeyword)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
+            }
+
+            var films = await _accountRepository.GetFilmAdminWithPagination(pageNumber, pageSize, searchKeyword);
+            return Ok(new { message = "Get accounts with pagination successfully", data = films ?? null, status = 200 });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            var existingAccount = await _accountRepository.GetByIdAsync(id);
+            if (existingAccount == null)
+            {
+                return NotFound();
+            }
+            await _accountRepository.DeleteAsync(id);
+            return NoContent();
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _accountRepository.getAllUser();
+            return Ok(new { message = "Get all users successfully", data = users ?? null, status = 200 });
+        }
+
+        [HttpGet("users/without-accounts")]
+        public async Task<IActionResult> GetUsersWithoutAccounts()
+        {
+            var users = await _accountRepository.GetUsersWithoutAccountsAsync();
+            return Ok(new { message = "Get users without accounts successfully", data = users ?? null, status = 200 });
         }
     }
 }

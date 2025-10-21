@@ -276,6 +276,8 @@ const FilmModal = ({onMode}) => {
                         URL Poster
                       </label>
                       <div className="col d-flex flex-column align-items-center justify-content-center">
+                        {console.log("Image Preview:", imagePreview)}
+                        {console.log("FormData Poster URL:", formData.posterUrl)}
                       <img 
                           src={imagePreview || formData.posterUrl || "https://placehold.co/600x400"} 
                           alt="image preview" 
