@@ -1,8 +1,11 @@
 const API_BASE_URL = "http://localhost:5003/api";
 const APIAdmin = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  //Kiểm tra xem body có phải là FormData 
+  const isFormData = options.body instanceof FormData;
   const defaultHearder = {
-    "Content-Type": "application/json",
+    // Trình duyệt sẽ tự động set 'multipart/form-data' và 'boundary'
+    ...(!isFormData && { "Content-Type": "application/json" }),
     // Lấy token từ local storage (ví dụ)
     // Authorization: `Bearer ${localStorage.getItem('authToken')}`,
   };
@@ -12,6 +15,7 @@ const APIAdmin = async (endpoint, options = {}) => {
       ...defaultHearder, // Thêm header mặc định ví dụ: 'Content-Type': 'application/json'
       ...options.headers, // Ghi đè header nếu có trong options ví dụ: { headers: { 'Content-Type': 'text/plain' } }
     },
+    body: isFormData ? options.body : JSON.stringify(options.body),
   };
   try {
     const response = await fetch(url, config);

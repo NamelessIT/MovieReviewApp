@@ -50,16 +50,54 @@ namespace MovieReviewApp.backend.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
-        public override async Task UpdateAsync(Film entity)
+    // Lấy dữ liệu phim theo id bao gồm thể loại và diễn viên
+        public async Task<Film?> GetFilmWithDetailsByIdAsync(int id)
         {
-            var existingFilm = await GetByIdAsync(entity.Id);
+            var film = await _context.Set<Film>()
+                .Include(f => f.FilmGenres)
+                    .ThenInclude(fg => fg.Genre)
+                .Include(f => f.FilmActors)
+                    .ThenInclude(fa => fa.Actor)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            return film;
+        }
+        public async Task UpdateDetailsFilmAsync(int id, FilmResponseDTO film, string? newPosterUrl)
+        {
+            var existingFilm = await GetFilmWithDetailsByIdAsync(id);
             if (existingFilm == null)
             {
-                throw new KeyNotFoundException($"Film with id {entity.Id} not found");
+                throw new KeyNotFoundException($"Film with id {film.Id} not found");
             }
+            // Xóa các liên ket hiện tại trong FilmGenres và FilmActors
+            existingFilm.FilmGenres.Clear();
+            existingFilm.FilmActors.Clear();
+            // Cập nhật các thuộc tính cơ bản
+            if (film.Genres != null)
+            {
+                foreach (var genre in film.Genres)
+                {
+                    existingFilm.FilmGenres.Add(new FilmGenre { GenreId = genre.Id });
+                }
+            }
+            if (film.Actors != null)
+            {
+                foreach (var actor in film.Actors)
+                {
+                    existingFilm.FilmActors.Add(new FilmActor { ActorId = actor.Id });
+                }
+            }
+            // Cập nhật các thuộc tính cơ bản
+            existingFilm.Title = film.Title;
+            existingFilm.ReleaseDate = film.ReleaseDate;
+            existingFilm.DirectorId = film.DirectorId;
+            existingFilm.TrailerUrl = film.TrailerUrl;
             existingFilm.UpdatedAt = DateTime.UtcNow;
-            _context.Entry(existingFilm).State = EntityState.Modified;
+            // Cập nhật PosterUrl nếu có
+            if (!string.IsNullOrEmpty(newPosterUrl))
+            {
+                existingFilm.PosterUrl = newPosterUrl;
+            }
             await _context.SaveChangesAsync();
         }
 
@@ -88,10 +126,17 @@ namespace MovieReviewApp.backend.Repositories
             return await _context.Set<Film>().CountAsync();
         }
 
-        public async Task<PaginatedResponse<FilmAdminDTO>> GetFilmAdminWithPagination(int pageNumber, int pageSize)
+        public async Task<PaginatedResponse<FilmAdminDTO>> GetFilmAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
         {
-            var totalFilms = await CountAllFilm();
-            var filmAdminDTO = await _context.Set<Film>()
+            // var totalFilms = await CountAllFilm();
+            // IQueryable không thực thi ngay, nó chỉ xây dựng câu lệnh SQL
+            var query = _context.Set<Film>()
+                // Thêm kiểm tra an toàn cho Title = null
+                .Where(f => string.IsNullOrEmpty(searchKeyword)
+                            || (f.Title != null && f.Title.Contains(searchKeyword)));
+            var totalRecords = await query.CountAsync();
+            // Thực thi truy vấn với phân trang và chuyển đổi sang DTO
+            var filmAdminDTO = await query
             // 1. Join với bảng Director
                 .Include(f => f.Director)
                 .Skip((pageNumber - 1) * pageSize)
@@ -115,9 +160,50 @@ namespace MovieReviewApp.backend.Repositories
             return new PaginatedResponse<FilmAdminDTO>
             {
                 Data = filmAdminDTO,
-                TotalPages = (int)Math.Ceiling((double)totalFilms / pageSize),
+                TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
                 CurrentPage = pageNumber
             };
+        }
+        // Thêm film kèm thể loại và diễn viên
+        public async Task<Film> AddFilmWithDetailsAsync(FilmResponseDTO dto)
+        {
+            // 1. Tạo đối tượng Film chính từ DTO
+            var newFilm = new Film
+            {
+                Title = dto.Title,
+                ReleaseDate = dto.ReleaseDate,
+                DirectorId = dto.DirectorId,
+                Synopsis = dto.Synopsis,
+                PosterUrl = dto.PosterUrl,
+                TrailerUrl = dto.TrailerUrl,
+                CreatedAt = DateTime.UtcNow,
+                isDeleted = false
+            };
+
+            // 2. Thêm các FilmGenre vào navigation property
+            if (dto.Genres != null)
+            {
+                foreach (var genreId in dto.Genres)
+                {
+                    newFilm.FilmGenres.Add(new FilmGenre { GenreId = genreId.Id });
+                }
+            }
+
+            // 3. Thêm các FilmActor vào navigation property
+            if (dto.Actors != null)
+            {
+                foreach (var actorId in dto.Actors)
+                {
+                    newFilm.FilmActors.Add(new FilmActor { ActorId = actorId.Id });
+                }
+            }
+
+            // 4. Thêm vào context và lưu lại
+            // EF Core sẽ tự động tạo bản ghi ở cả 3 bảng (films, film_genres, film_actors)
+            await _context.Set<Film>().AddAsync(newFilm);
+            await _context.SaveChangesAsync();
+
+            return newFilm;
         }
     }
 }

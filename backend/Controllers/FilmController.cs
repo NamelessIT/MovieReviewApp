@@ -2,6 +2,8 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using backend.DTOs;
+using backend.Services;
 namespace backend.Controllers
 {
     [ApiController]
@@ -9,10 +11,15 @@ namespace backend.Controllers
     public class FilmController : ControllerBase
     {
         private readonly FilmRepository _filmRepository;
-
-        public FilmController(FilmRepository filmRepository)
+        private readonly GenreRepository _GenreRepository;
+        private readonly ActorRepository _ActorRepository;
+        private readonly CloudinaryUploaderService _uploaderService;
+        public FilmController(FilmRepository filmRepository, GenreRepository genreRepository, ActorRepository actorRepository, CloudinaryUploaderService uploaderService)
         {
             _filmRepository = filmRepository;
+            _GenreRepository = genreRepository;
+            _ActorRepository = actorRepository;
+            _uploaderService = uploaderService;
         }
 
         [HttpGet("admin/all")]
@@ -38,10 +45,10 @@ namespace backend.Controllers
 
         // [Authorize(Roles = "admin")]
         [HttpGet("search/admin/{keyword}")]
-        public async Task<IActionResult> SearchFilmsAdmin(string keyword)
+        public async Task<IActionResult> SearchFilmsAdmin(int pageNumber, int pageSize, string keyword)
         {
-            var films = await _filmRepository.SearchByNameAsync(keyword);
-            return Ok(new { message = "Search films (admin) successfully", data = films ?? [], status = 200 });
+            var films = await _filmRepository.GetFilmAdminWithPagination(pageNumber, pageSize, keyword);
+            return Ok(new { message = "Search films (admin) successfully", data = films ?? null, status = 200 });
         }
 
         // User: tìm kiếm film theo tên
@@ -63,7 +70,24 @@ namespace backend.Controllers
             }
             return Ok(new { message = "Get all film successfully", data = film, status = 200 });
         }
-
+        // có dữ liệu diễn viên và thể loại
+        [HttpGet("admin/detail/{id}")]
+        public async Task<IActionResult> GetFilmDetailsById(int id)
+        {
+            var response = await _filmRepository.GetFilmWithDetailsByIdAsync(id);
+            var filmResponse = new FilmResponseDTO
+            {
+                Title = response.Title,
+                ReleaseDate = response.ReleaseDate,
+                DirectorId = response.DirectorId,
+                Synopsis = response.Synopsis,
+                PosterUrl = response.PosterUrl,
+                TrailerUrl = response.TrailerUrl,
+                Genres = response.FilmGenres.Select(fg => new GenreDTO { Id = fg.GenreId, Name = fg.Genre.Name }).ToList(),
+                Actors = response.FilmActors.Select(fa => new ActorDTO { Id = fa.ActorId, Name = fa.Actor.Name }).ToList()
+            };
+            return Ok(new { message = "Get all film successfully", data = filmResponse, status = 200 });
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFilmByIdByUser(int id)
         {
@@ -77,18 +101,49 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateFilm([FromBody] Film film)
+        public async Task<IActionResult> CreateFilm([FromForm] FilmResponseDTO film)
         {
             if (film == null)
             {
                 return BadRequest();
             }
-            await _filmRepository.AddAsync(film);
-            return CreatedAtAction(nameof(GetFilmById), new { id = film.Id }, film);
+            string? newPosterUrl = null;
+            // 1. Tải tệp lên Cloudinary nếu người dùng gửi lên
+            if (film.PosterFile != null && film.PosterFile.Length > 0)
+            {
+                // Giả sử _uploaderService đã được inject vào controller
+                newPosterUrl = await _uploaderService.UploadFileAsync(film.PosterFile, "film-posters");
+                if (string.IsNullOrEmpty(newPosterUrl))
+                {
+                    return BadRequest(new { message = "Tải ảnh poster thất bại." });
+                }
+            }
+            film.PosterUrl = newPosterUrl;
+            // Lưu dữ liệu vào cơ sở dữ liệu
+            var createdEntity = await _filmRepository.AddFilmWithDetailsAsync(film);
+            // Chuẩn bị dữ liệu trả về
+            var response = await _filmRepository.GetFilmWithDetailsByIdAsync(createdEntity.Id);
+            if (response == null) {
+            return StatusCode(500, new { message = "Không thể truy xuất phim vừa tạo." });
+        }
+            var FilmCreated = new FilmResponseDTO
+            {
+                Title = response.Title,
+                ReleaseDate = response.ReleaseDate,
+                DirectorId = response.DirectorId,
+                Synopsis = response.Synopsis,
+                PosterUrl = response.PosterUrl,
+                TrailerUrl = response.TrailerUrl,
+                // chỉ lấy các thuộc tính Id và Name không lấy toàn bộ đối tượng có thuộc tính điều hướng 
+                Genres = response.FilmGenres.Select(fg => new GenreDTO { Id = fg.GenreId, Name = fg.Genre.Name }).ToList(),
+                Actors = response.FilmActors.Select(fa => new ActorDTO { Id = fa.ActorId, Name = fa.Actor.Name }).ToList()
+            };
+            return CreatedAtAction(nameof(GetFilmById), new { id = FilmCreated.Id }, FilmCreated);
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFilm(int id, [FromBody] Film film)
+        public async Task<IActionResult> UpdateDetailsFilm(int id, [FromForm] FilmResponseDTO film)
         {
             try
             {
@@ -96,12 +151,18 @@ namespace backend.Controllers
                 {
                     return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ." });
                 }
-                var existingFilm = await _filmRepository.GetByIdAsync(id);
-                if (existingFilm == null)
+                string? newPosterUrl = null;
+                // 1. Tải tệp lên Cloudinary nếu người dùng gửi lên
+                if (film.PosterFile != null && film.PosterFile.Length > 0)
                 {
-                    return NotFound(new { message = "Film không tồn tại." });
-                }
-                await _filmRepository.UpdateAsync(film);
+                    // Giả sử _uploaderService đã được inject vào controller
+                    newPosterUrl = await _uploaderService.UploadFileAsync(film.PosterFile, "film-posters");
+                    if (string.IsNullOrEmpty(newPosterUrl))
+                    {
+                        return BadRequest(new { message = "Tải ảnh poster thất bại." });
+                    }
+                }    
+                await _filmRepository.UpdateDetailsFilmAsync(id, film, newPosterUrl);
                 return NoContent();
             }
             catch (Exception ex)
@@ -156,14 +217,14 @@ namespace backend.Controllers
             });
         }
         [HttpGet("admin/pagination")]
-        public async Task<IActionResult> GetFilmsWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetFilmsWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize,[FromQuery] string? searchKeyword)
         {
             if (pageNumber <= 0 || pageSize <= 0)
             {
                 return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
             }
 
-            var films = await _filmRepository.GetFilmAdminWithPagination(pageNumber, pageSize);
+            var films = await _filmRepository.GetFilmAdminWithPagination(pageNumber, pageSize, searchKeyword);
             return Ok(new { message = "Get films with pagination successfully", data = films ?? null, status = 200 });
         }
     }

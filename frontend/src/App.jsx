@@ -6,6 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/admin/StyleAdmin.css';
 import './styles/user/StyleUser.css';
+import './styles/admin/ModalAdmin.css';
 function App() {
   return (
     <>

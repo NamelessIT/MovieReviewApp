@@ -5,6 +5,7 @@ import FilmAdmin from "../page/admin/Film.jsx";
 import AccountAdmin from "../page/admin/Account.jsx";
 import UserAdmin from "../page/admin/User.jsx";
 import ReviewAdmin from "../page/admin/Review.jsx";
+import FilmModal from "../components/modal/admin/FilmModal.jsx";
 const UserRoutes = () => {
   return (
     
@@ -17,6 +18,8 @@ const UserRoutes = () => {
         <Route path="/admin/accounts" element={<AccountAdmin />} />
         <Route path="/admin/users" element={<UserAdmin />} />
         <Route path="/admin/Reviews" element={<ReviewAdmin />} />
+        <Route path="/admin/films/add" element={<FilmModal onMode="add" />} />
+        <Route path="/admin/films/edit/:filmId" element={<FilmModal onMode="edit" />} />
       </Routes>
   );
 }; export default UserRoutes;

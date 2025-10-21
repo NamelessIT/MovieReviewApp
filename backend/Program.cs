@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using backend.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -24,6 +25,7 @@ builder.Services.AddSwaggerGen();
 
 // Add Swagger + JWT Config
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSingleton<CloudinaryUploaderService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });

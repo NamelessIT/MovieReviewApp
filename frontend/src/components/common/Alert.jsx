@@ -36,4 +36,21 @@ export const confirmDelete = (title, id, onDelete) => {
     });
 }
 
+export const AlertSuccess = (message) => {
+    Swal.fire({
+        icon: 'success',
+        title: message,
+        draggable: true
+    });
+}
+
+export const AlertError = () => {
+    Swal.fire({
+    icon: "error",
+    title: "Oops...",
+    text: "Something went wrong!",
+    footer: '<a href="#">Why do I have this issue?</a>'
+    });
+}
+
 

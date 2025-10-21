@@ -6,7 +6,7 @@ namespace MovieReviewApp.backend.Models
         public int FilmId { get; set; }
         public int ActorId { get; set; }
 
-        public required Film Film { get; set; }
-        public required Actor Actor { get; set; }
+        public Film Film { get; set; } = null!;
+        public Actor Actor { get; set; } = null!;
     }
 }

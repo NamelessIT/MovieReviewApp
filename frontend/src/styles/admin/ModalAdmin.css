@@ -1,0 +1,11 @@
+.input-readOnly{
+  background-color: rgba(128, 128, 128, 0.2);
+  color: black;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.input-readOnly:focus{
+  background-color: rgba(128, 128, 128, 0.2);
+  color: black;
+}
