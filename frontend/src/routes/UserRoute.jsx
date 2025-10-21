@@ -1,5 +1,7 @@
 import {Routes, Route, Navigate} from "react-router-dom";
 import Homepage from '../page/user/Homepage.jsx';
+import MovieListPage from '../page/user/MovieListPage.jsx';
+import MovieDetailPage from '../page/user/MovieDetailPage.jsx';
 import HomepageAdmin from '../page/admin/Homepage.jsx';
 import FilmAdmin from "../page/admin/Film.jsx";
 import AccountAdmin from "../page/admin/Account.jsx";
@@ -12,6 +14,8 @@ const UserRoutes = () => {
       <Routes>
         <Route index element={<Navigate to ="/user/homepage" replace />} />
         <Route path="/user/homepage" element={<Homepage />} />
+        <Route path="/user/movies" element={<MovieListPage />} />
+        <Route path="/user/movie/:id" element={<MovieDetailPage />} />
         {/* admin */}
         <Route path="/admin/homepage" element={<HomepageAdmin />} />
         <Route path="/admin/films" element={<FilmAdmin />} />

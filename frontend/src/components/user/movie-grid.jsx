@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { Play, Plus, Star, ChevronLeft, ChevronRight } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Play, Plus, Star, ChevronLeft, ChevronRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import axios from "axios"
@@ -20,6 +21,7 @@ import axios from "axios"
  */
 
 export function MovieGrid({ title, showViewAll = true }) {
+  const navigate = useNavigate()
   const [allMovies, setAllMovies] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -122,31 +124,30 @@ useEffect(() => {
 
     /** ==========================
    * 🧩 HÀM 1: Xử lý khi bấm nút "Play"
-   * Mục tiêu: mở link trailer Youtube (film.trailerUrl)
+   * Mục tiêu: chuyển đến trang chi tiết phim
    * ========================== */
-  const handlePlayClick = (movie) => {
-    console.log("Play trailer for movie:", movie)
-    // 👉 TODO: bạn tự viết code mở trailerUrl
-    // Ví dụ:
-    // window.open(movie.trailerUrl, "_blank")
+  const handlePlayClick = (movie, e) => {
+    e.stopPropagation()
+    navigate(`/user/movie/${movie.id}`)
   }
 
   /** ==========================
    * 🧩 HÀM 2: Xử lý khi bấm nút "Add to List"
    * Mục tiêu: gọi API CreateFavorites và đổi icon Plus → Check khi thành công
    * ========================== */
-  const handleAddToFavorites = async (movie) => {
-    console.log("Add to favorites movie:", movie)
+  const handleAddToFavorites = async (movie, e) => {
+    e.stopPropagation()
+    const currentAccountId = 1 // Replace with actual logged-in user ID
+    
     try {
-      // 👉 TODO: bạn tự viết code gọi API
-      // const res = await axios.post("http://localhost:5003/api/Review/CreateFavorites", {
-      //   accountId: 1,
-      //   filmId: movie.id,
-      //   favorites: true,
-      // })
-      // if (res.status === 200) {
-      //   setFavorites((prev) => ({ ...prev, [movie.id]: true }))
-      // }
+      const res = await axios.post("http://localhost:5003/api/Review/CreateFavorites", {
+        accountId: currentAccountId,
+        filmId: movie.id,
+        favorites: true,
+      })
+      if (res.status === 200) {
+        setFavorites((prev) => ({ ...prev, [movie.id]: true }))
+      }
     } catch (err) {
       console.error("Error adding to favorites:", err)
     }
@@ -171,7 +172,12 @@ useEffect(() => {
             {title} <span className="text-muted-foreground text-lg">({allMovies.length} films)</span>
           </h2>
           {showViewAll && (
-            <Button variant="outline" size="sm" className="view-all-button">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="view-all-button"
+              onClick={() => navigate("/user/movies")}
+            >
               View All
             </Button>
           )}
@@ -182,7 +188,8 @@ useEffect(() => {
           {currentMovies.map((movie) => (
             <Card
               key={movie.id}
-              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 border-orange background-black "
+              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 border-orange background-black cursor-pointer"
+              onClick={() => navigate(`/user/movie/${movie.id}`)}
             >
               <div className="relative">
                 <img src={movie.image || "/placeholder.svg"} alt={movie.title} className="w-full h-72 object-cover" />
@@ -193,7 +200,7 @@ useEffect(() => {
                     <Button
                       size="sm"
                       className="bg-primary hover:bg-primary/90 btn-play movieGrid px-4"
-                      onClick={() => handlePlayClick(movie)}
+                      onClick={(e) => handlePlayClick(movie, e)}
                     >
                       <Play className="h-4 w-4" />
                     </Button>
@@ -201,7 +208,7 @@ useEffect(() => {
                       size="sm"
                       variant="outline"
                       className="border-white text-white hover:bg-white/10 bg-transparent btn-plus movieGrid"
-                      onClick={() => handleAddToFavorites(movie)}
+                      onClick={(e) => handleAddToFavorites(movie, e)}
                     >
                       {favorites[movie.id] ? (
                         <Check className="h-4 w-4 text-green-400" />
