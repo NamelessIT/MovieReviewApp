@@ -50,6 +50,17 @@ namespace backend.Controllers
             return Ok(new { message = "Get reviews by account ID successfully", data = reviews ?? [], status = 200 });
         }
 
+        [HttpGet("account/{accountId}/film/{filmId}")]
+        public async Task<IActionResult> GetReviewByAccountIdAndFilmId(int accountId, int filmId)
+        {
+            var review = await _reviewRepository.GetReviewByAccountIdAndFilmIdAsync(accountId, filmId);
+            if (review == null)
+            {
+                return NotFound(new { message = "Review not found", status = 404 });
+            }
+            return Ok(new { message = "Get review successfully", data = review, status = 200 });
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromBody] Review review)
         {

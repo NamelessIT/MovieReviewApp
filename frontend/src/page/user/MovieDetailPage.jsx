@@ -6,23 +6,46 @@ import { Star, Calendar, Play, Heart, User, MessageCircle } from "lucide-react"
 import axios from "axios"
 import Swal from "sweetalert2"
 
+// Cấu hình baseURL một lần cho toàn file
+axios.defaults.baseURL = "http://localhost:5003/api"
+
 export default function MovieDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  
+
   const [movie, setMovie] = useState(null)
   const [loading, setLoading] = useState(true)
   const [userRating, setUserRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [loadingFavorite, setLoadingFavorite] = useState(true)
   const [comment, setComment] = useState("")
   const [reviews, setReviews] = useState([])
   const [showTrailer, setShowTrailer] = useState(false)
 
-  // For demo - replace with actual auth
-  const currentAccountId = 1 // Replace with actual logged-in user ID
+  // Tạm thời dùng ID cố định — sau này có thể lấy từ localStorage khi login
+  const currentAccountId = 1
 
   useEffect(() => {
+      const fetchFavoriteStatus = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5003/api/Review/account/${currentAccountId}/film/${id}`
+        )
+        // Backend trả về true/false hoặc object → tùy backend bạn định nghĩa
+            if (res?.data?.data?.favorites === true) {
+              setIsFavorite(true)
+            } else {
+              setIsFavorite(false)
+        }
+      } catch (err) {
+        console.error("❌ Lỗi khi check yêu thích:", err)
+      } finally {
+        setLoadingFavorite(false)
+      }
+    }
+
+    fetchFavoriteStatus()
     fetchMovieDetails()
     fetchReviews()
   }, [id])
@@ -30,57 +53,53 @@ export default function MovieDetailPage() {
   const fetchMovieDetails = async () => {
     setLoading(true)
     try {
-      // Get film details
-      const filmRes = await axios.get(`http://localhost:5003/api/Film/${id}`)
-      const film = filmRes.data.data
+      const [
+        filmRes,
+        filmGenreRes,
+        allGenresRes,
+        actorRes,
+        directorRes,
+        avgRatingRes,
+        reviewCountRes,
+      ] = await Promise.all([
+        axios.get(`/Film/${id}`),
+        axios.get(`/FilmGenre/GetByFilmId/${id}`),
+        axios.get(`/genre/all-exist`),
+        axios.get(`/film-actor/film/${id}`),
+        axios.get(`/FilmDirector/GetByFilmId/${id}`),
+        axios.get(`/Review/admin/GetAverageRatings`),
+        axios.get(`/Review/admin/GetFilmReviewCounts`),
+      ])
 
-      // Get genres
-      const genreRes = await axios.get(`http://localhost:5003/api/FilmGenre/GetByFilmId/${id}`)
-      const filmGenres = genreRes.data.data || []
-      
-      const allGenresRes = await axios.get("http://localhost:5003/api/genre/all-exist")
+      const film = filmRes.data.data
+      const filmGenres = filmGenreRes.data.data || []
       const allGenres = allGenresRes.data.data || []
-      
       const genres = filmGenres
-        .map((fg) => {
-          const g = allGenres.find((gg) => gg.id === fg.genreId)
-          return g ? g.name : null
-        })
+        .map(fg => allGenres.find(gg => gg.id === fg.genreId)?.name)
         .filter(Boolean)
 
-      // Get actors
-      const actorRes = await axios.get(`http://localhost:5003/api/FilmActor/GetByFilmId/${id}`)
-      const filmActors = actorRes.data.data || []
-      
-      const actors = await Promise.all(
-        filmActors.map(async (fa) => {
-          const actorDetail = await axios.get(`http://localhost:5003/api/Actor/${fa.actorId}`)
-          return actorDetail.data.data
-        })
-      )
+      // Lấy thông tin diễn viên & đạo diễn song song
+      const [actors, directors] = await Promise.all([
+        Promise.all(
+          (actorRes.data.data || []).map(fa =>
+            axios.get(`/actor/${fa.actorId}`).then(r => r.data.data)
+          )
+        ),
+        Promise.all(
+          (directorRes.data.data || []).map(fd =>
+            axios.get(`/director/${fd.directorId}`).then(r => r.data.data)
+          )
+        ),
+      ])
 
-      // Get directors
-      const directorRes = await axios.get(`http://localhost:5003/api/FilmDirector/GetByFilmId/${id}`)
-      const filmDirectors = directorRes.data.data || []
-      
-      const directors = await Promise.all(
-        filmDirectors.map(async (fd) => {
-          const directorDetail = await axios.get(`http://localhost:5003/api/Director/${fd.directorId}`)
-          return directorDetail.data.data
-        })
-      )
+      // Lấy điểm trung bình và số lượt đánh giá
+      const avgRatings = avgRatingRes.data.data || []
+      const avgRatingObj = avgRatings.find(r => r.movieId === parseInt(id))
+      const averageRating = avgRatingObj ? avgRatingObj.averageRating : 0
 
-      // Get average rating
-      const ratingRes = await axios.get("http://localhost:5003/api/Review/admin/GetAverageRatings")
-      const ratingData = ratingRes?.data?.data || []
-      const filmRatingObj = ratingData.find((r) => r.movieId === parseInt(id))
-      const averageRating = filmRatingObj ? filmRatingObj.averageRating : 0
-
-      // Get review count
-      const reviewCountRes = await axios.get("http://localhost:5003/api/Review/admin/GetFilmReviewCounts")
-      const reviewCountData = reviewCountRes?.data?.data || []
-      const filmReviewObj = reviewCountData.find((r) => r.movieId === parseInt(id))
-      const reviewCount = filmReviewObj ? filmReviewObj.reviewCount : 0
+      const reviewCounts = reviewCountRes.data.data || []
+      const reviewCountObj = reviewCounts.find(r => r.movieId === parseInt(id))
+      const reviewCount = reviewCountObj ? reviewCountObj.reviewCount : 0
 
       setMovie({
         id: film.id,
@@ -88,7 +107,9 @@ export default function MovieDetailPage() {
         image: film.posterUrl,
         synopsis: film.synopsis,
         releaseDate: film.releaseDate,
-        year: film.releaseDate ? new Date(film.releaseDate).getFullYear() : new Date(film.createdAt).getFullYear(),
+        year: film.releaseDate
+          ? new Date(film.releaseDate).getFullYear()
+          : new Date(film.createdAt).getFullYear(),
         genres,
         actors,
         directors,
@@ -97,23 +118,22 @@ export default function MovieDetailPage() {
         trailerUrl: film.trailerUrl || "",
       })
 
-      // Check user's existing review
+      // Kiểm tra review của người dùng hiện tại
       try {
-        const userReviewRes = await axios.get(`http://localhost:5003/api/Review/account/${currentAccountId}`)
+        const userReviewRes = await axios.get(`/Review/account/${currentAccountId}`)
         const userReviews = userReviewRes.data.data || []
         const existingReview = userReviews.find(r => r.filmId === parseInt(id))
-        
+
         if (existingReview) {
           if (existingReview.rating) setUserRating(existingReview.rating)
           if (existingReview.favorites) setIsFavorite(existingReview.favorites)
           if (existingReview.comment) setComment(existingReview.comment)
         }
-      } catch (err) {
-        console.log("No existing review found")
+      } catch {
+        console.log("Không tìm thấy review cá nhân.")
       }
-
     } catch (err) {
-      console.error("❌ Error fetching movie details:", err)
+      console.error("❌ Lỗi tải dữ liệu phim:", err)
       Swal.fire("Lỗi", "Không thể tải thông tin phim", "error")
     } finally {
       setLoading(false)
@@ -122,122 +142,104 @@ export default function MovieDetailPage() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`http://localhost:5003/api/Review/film/${id}`)
+      const res = await axios.get(`/Review/film/${id}`)
       const reviewsData = res.data.data || []
-      
-      // Get account details for each review
+
       const reviewsWithAccounts = await Promise.all(
         reviewsData
-          .filter(r => r.comment && r.comment.trim() !== "")
-          .map(async (review) => {
+          .filter(r => r.comment && r.comment.trim())
+          .map(async review => {
             try {
-              const accountRes = await axios.get(`http://localhost:5003/api/Account/${review.accountId}`)
+              const accountRes = await axios.get(`/Account/${review.accountId}`)
               const account = accountRes.data.data
-              return {
-                ...review,
-                accountName: account.userName || "Người dùng",
-              }
-            } catch (err) {
-              return {
-                ...review,
-                accountName: "Người dùng",
-              }
+              return { ...review, accountName: account.userName || "Người dùng" }
+            } catch {
+              return { ...review, accountName: "Người dùng" }
             }
           })
       )
-      
+
       setReviews(reviewsWithAccounts)
     } catch (err) {
-      console.error("❌ Error fetching reviews:", err)
+      console.error("❌ Lỗi tải bình luận:", err)
     }
   }
 
-  const handleRatingClick = async (rating) => {
+  const handleRatingClick = async rating => {
     setUserRating(rating)
-    
     try {
-      await axios.post("http://localhost:5003/api/Review/CreateRating", {
+      await axios.post(`/Review/CreateRating`, {
         accountId: currentAccountId,
         filmId: parseInt(id),
-        rating: rating,
+        rating,
       })
-      
       Swal.fire("Thành công", "Đánh giá của bạn đã được lưu", "success")
-      fetchMovieDetails() // Refresh to update average rating
+      fetchMovieDetails()
     } catch (err) {
-      console.error("❌ Error rating movie:", err)
+      console.error("❌ Lỗi khi đánh giá:", err)
       Swal.fire("Lỗi", "Không thể lưu đánh giá", "error")
     }
   }
 
   const handleFavoriteToggle = async () => {
-    const newFavoriteStatus = !isFavorite
-    setIsFavorite(newFavoriteStatus)
-    
+    const newStatus = !isFavorite
+    setIsFavorite(newStatus)
     try {
-      await axios.post("http://localhost:5003/api/Review/CreateFavorites", {
+      await axios.post(`/Review/CreateFavorites`, {
         accountId: currentAccountId,
         filmId: parseInt(id),
-        favorites: newFavoriteStatus,
+        favorites: newStatus,
       })
-      
       Swal.fire(
         "Thành công",
-        newFavoriteStatus ? "Đã thêm vào danh sách yêu thích" : "Đã xóa khỏi danh sách yêu thích",
+        newStatus
+          ? "Đã thêm vào danh sách yêu thích"
+          : "Đã xóa khỏi danh sách yêu thích",
         "success"
       )
     } catch (err) {
-      console.error("❌ Error toggling favorite:", err)
-      setIsFavorite(!newFavoriteStatus) // Revert on error
+      console.error("❌ Lỗi yêu thích:", err)
+      setIsFavorite(!newStatus)
       Swal.fire("Lỗi", "Không thể cập nhật danh sách yêu thích", "error")
     }
   }
 
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async e => {
     e.preventDefault()
-    
     if (!comment.trim()) {
       Swal.fire("Cảnh báo", "Vui lòng nhập bình luận", "warning")
       return
     }
-    
     try {
-      await axios.post("http://localhost:5003/api/Review/CreateComment", {
+      await axios.post(`/Review/CreateComment`, {
         accountId: currentAccountId,
         filmId: parseInt(id),
         comment: comment.trim(),
       })
-      
       Swal.fire("Thành công", "Bình luận của bạn đã được đăng", "success")
       setComment("")
-      fetchReviews() // Refresh reviews
+      fetchReviews()
     } catch (err) {
-      console.error("❌ Error submitting comment:", err)
+      console.error("❌ Lỗi bình luận:", err)
       Swal.fire("Lỗi", "Không thể đăng bình luận", "error")
     }
   }
 
-  const getYouTubeEmbedUrl = (url) => {
+  const getYouTubeEmbedUrl = url => {
     if (!url) return ""
-    
-    // Extract video ID from various YouTube URL formats
     const patterns = [
       /youtube\.com\/watch\?v=([^&]+)/,
       /youtube\.com\/embed\/([^?]+)/,
       /youtu\.be\/([^?]+)/,
     ]
-    
     for (const pattern of patterns) {
       const match = url.match(pattern)
-      if (match) {
-        return `https://www.youtube.com/embed/${match[1]}`
-      }
+      if (match) return `https://www.youtube.com/embed/${match[1]}`
     }
-    
     return url
   }
 
-  if (loading) {
+  if (loading)
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -247,9 +249,8 @@ export default function MovieDetailPage() {
         <Footer />
       </div>
     )
-  }
 
-  if (!movie) {
+  if (!movie)
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -265,7 +266,6 @@ export default function MovieDetailPage() {
         <Footer />
       </div>
     )
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -393,7 +393,7 @@ export default function MovieDetailPage() {
                 <h2 className="text-2xl font-bold mb-4">Diễn viên</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {movie.actors.map((actor) => (
-                    <div key={actor.id} className="text-center">
+                    <div key={actor.id } className="text-center">
                       <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 flex items-center justify-center mb-2">
                         <User className="h-10 w-10 text-gray-400" />
                       </div>

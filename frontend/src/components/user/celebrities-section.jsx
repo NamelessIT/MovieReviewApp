@@ -45,9 +45,6 @@ export function CelebritiesSection() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-foreground text-White">Celebrities</h2>
-          <Button variant="outline" size="sm" className="view-all-button">
-            View All
-          </Button>
         </div>
 
         {/* Loading / Empty / Data */}

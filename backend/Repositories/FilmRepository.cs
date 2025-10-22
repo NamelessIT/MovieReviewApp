@@ -115,7 +115,9 @@ namespace MovieReviewApp.backend.Repositories
         public async Task<List<Film>> GetTopRatedFilmsAsync(int limit = 10)
         {
             return await _context.Set<Film>()
-                .Where(f => !f.isDeleted && f.Reviews.Any()) // chỉ lấy film có review
+                .Where(f => !f.isDeleted 
+                    && f.Reviews.Any() 
+                    && f.Reviews.Average(r => r.Rating) > 0) // ✅ chỉ lấy film có rating trung bình > 0
                 .OrderByDescending(f => f.Reviews.Average(r => r.Rating))
                 .Take(limit)
                 .ToListAsync();

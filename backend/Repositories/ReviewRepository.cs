@@ -30,6 +30,12 @@ namespace MovieReviewApp.backend.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Review?> GetReviewByAccountIdAndFilmIdAsync(int accountId, int filmId)
+        {
+            return await _context.Set<Review>()
+                .FirstOrDefaultAsync(r => r.Account.Id == accountId && r.Film.Id == filmId && !r.isDeleted);
+        }
+
 
         public override async Task DeleteAsync(int id)
         {
