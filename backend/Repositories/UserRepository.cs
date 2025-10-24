@@ -42,5 +42,20 @@ namespace MovieReviewApp.backend.Repositories
         {
             return await _context.Set<User>().CountAsync();
         }
+
+        public async Task<List<User>> GetUserAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
+        {
+            var query = _context.Set<User>().AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchKeyword))
+            {
+                query = query.Where(u => u.FullName.Contains(searchKeyword));
+            }
+
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }

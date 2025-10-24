@@ -36,6 +36,20 @@ namespace MovieReviewApp.backend.Repositories
                 .FirstOrDefaultAsync(r => r.Account.Id == accountId && r.Film.Id == filmId && !r.isDeleted);
         }
 
+        public async Task<List<Review>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
+        {
+            var query = _context.Set<Review>().AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchKeyword))
+            {
+                query = query.Where(u => u.Comment != null && u.Comment.Contains(searchKeyword));
+            }
+
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
 
         public override async Task DeleteAsync(int id)
         {
