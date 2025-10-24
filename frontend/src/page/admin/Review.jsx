@@ -1,200 +1,103 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import ReviewsService from "../../service/admin/ReviewService";
 import { LayoutWrapper } from "../../components/admin/LayoutWrapper";
+import Pagination from "../../components/pagination/Pagination";
+import { NavLink } from "react-router-dom";
 
 const Reviews = () => {
+  // giống Film.jsx: state phân trang + tìm kiếm
+  const rowsPerPage = 6;
+  const [filteredReviews, setFilteredReviews] = useState([]); // set = response.data
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // bắt đầu từ 1
+  const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [ratingFilter, setRatingFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Lấy id từ query string (?id=...)
+  // Lấy filmId trên URL (?id=...) nếu có, để filter review theo phim y như logic cũ
   const [targetId, setTargetId] = useState(null);
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const id = new URLSearchParams(window.location.search).get("id");
-      setTargetId(id);
-    }
+    const id = new URLSearchParams(window.location.search).get("id");
+    setTargetId(id || null);
   }, []);
 
+  const loadData = async () => {
+    try {
+      setReviewsLoading(true);
+      const response = await ReviewsService.getAllReviewsWithPagination(
+        currentPage,
+        rowsPerPage,
+        searchTerm,
+        targetId // optional: filter theo filmId nếu có
+      );
+
+      // Theo pattern Film.jsx: component giữ response.data
+      setFilteredReviews(response || []);
+      setReviewsError(null);
+
+      // Tổng trang: lấy từ response.data.totalPages nếu có, mặc định 1
+      setTotalPages(response?.data?.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      setReviewsError(error?.message || "Unknown error");
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!targetId) return;
-    const ac = new AbortController();
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, searchTerm, targetId]);
 
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const handlePageChange = (event) => {
+    // react-paginate trả index bắt đầu 0 → +1 để khớp currentPage
+    setCurrentPage(event.selected + 1);
+  };
 
-        // 1) Reviews
-        const res = await fetch(`api/Review/${encodeURIComponent(targetId)}`, { signal: ac.signal });
-        if (!res.ok) throw new Error(`Failed to fetch reviews: ${res.status}`);
-        const data = await res.json();
-
-        // 2) Caches để tránh gọi trùng
-        const accountCache = new Map(); // AccountId -> UserID
-        const userCache = new Map();    // UserID -> FullName
-        const filmCache = new Map();    // MovieId -> Title
-
-        const getAccountUserId = async (accountId) => {
-          if (!accountId) return "";
-          if (accountCache.has(accountId)) return accountCache.get(accountId);
-          const r = await fetch(`/api/account/${encodeURIComponent(accountId)}`, { signal: ac.signal });
-          if (!r.ok) { accountCache.set(accountId, ""); return ""; }
-          const acc = await r.json();
-          const uid = acc?.UserID ?? "";
-          accountCache.set(accountId, uid);
-          return uid;
-        };
-
-        const getUserFullName = async (userId) => {
-          if (!userId) return "";
-          if (userCache.has(userId)) return userCache.get(userId);
-          const r = await fetch(`/api/user/${encodeURIComponent(userId)}`, { signal: ac.signal });
-          if (!r.ok) { userCache.set(userId, ""); return ""; }
-          const u = await r.json();
-          const name = u?.FullName ?? "";
-          userCache.set(userId, name);
-          return name;
-        };
-
-        const getFilmTitle = async (filmId) => {
-          if (!filmId) return "";
-          if (filmCache.has(filmId)) return filmCache.get(filmId);
-          const r = await fetch(`/api/film/${encodeURIComponent(filmId)}`, { signal: ac.signal });
-          if (!r.ok) { filmCache.set(filmId, ""); return ""; }
-          const f = await r.json();
-          const title = f?.Title ?? "";
-          filmCache.set(filmId, title);
-          return title;
-        };
-
-        // 3) Resolve song song
-        const rows = await Promise.all(
-          (Array.isArray(data) ? data : []).map(async (rv) => {
-            const userId = await getAccountUserId(rv.AccountId);
-            const fullName = await getUserFullName(userId);
-            const filmTitle = await getFilmTitle(rv.MovieId);
-            return {
-              id: rv.Id,
-              film: filmTitle,
-              reviewer: fullName,
-              rating: rv.Rating,
-              content: rv.Comment,
-              createdAt: rv.CreatedAt,
-              updatedAt: rv.UpdatedAt,
-            };
-          })
-        );
-
-        setReviews(rows);
-        setCurrentPage(1);
-      } catch (e) {
-        if (e?.name !== "AbortError") setError(e?.message ?? "Unknown error");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-    return () => ac.abort();
-  }, [targetId]);
-
-  // ---- Filter + paginate
-  const filteredReviews = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-    return reviews.filter((review) => {
-      const matchesSearch =
-        !term ||
-        review.film?.toLowerCase().includes(term) ||
-        review.reviewer?.toLowerCase().includes(term) ||
-        review.content?.toLowerCase().includes(term);
-      const matchesRating = ratingFilter === "all" || String(review.rating) === ratingFilter;
-      return matchesSearch && matchesRating;
-    });
-  }, [reviews, searchTerm, ratingFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / rowsPerPage));
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const pageReviews = filteredReviews.slice(startIndex, startIndex + rowsPerPage);
-
-  const prevPage = () => setCurrentPage((p) => Math.max(1, p - 1));
-  const nextPage = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const onDelete = async (reviewId) => {
+    try {
+      await ReviewsService.delete(reviewId);
+      loadData();
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
 
   return (
     <LayoutWrapper>
       <div className="container">
-        <h1 className="display-6 fw-bold mb-4">Reviews</h1>
-
-        {!targetId && (
-          <div className="alert alert-warning" role="alert">
-            Không tìm thấy <code>?id=...</code> trên URL. Thêm tham số <b>id</b> để tải review, ví dụ: <code>/reviews?id=123</code>.
-          </div>
-        )}
-
         {/* Filter/Search card */}
         <div className="card border-0 shadow-sm mb-4">
+          <h1 className="fw-bold m-2">Quản lý đánh giá</h1>
           <div className="card-body">
-            <div className="row g-3 align-items-end">
-              <div className="col-12 col-md-6">
-                <label className="form-label">Search</label>
-                <div className="position-relative">
-                  <i
-                    className="bi bi-search position-absolute top-50 translate-middle-y text-muted"
-                    style={{ left: 10 }}
-                  />
-                  <input
-                    className="form-control ps-4"
-                    placeholder="Tìm kiếm theo phim, người review, nội dung…"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="position-relative" style={{ width: "300px" }}>
+                <i className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted" />
+                <input
+                  className="form-control ps-5"
+                  placeholder="Tìm kiếm theo phim, người review, nội dung…"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
 
-              <div className="col-6 col-md-3">
-                <label className="form-label">Rating</label>
-                <select
-                  className="form-select"
-                  value={ratingFilter}
-                  onChange={(e) => {
-                    setRatingFilter(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="all">All</option>
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
-                  <option value="1">1 Star</option>
-                </select>
-              </div>
-
-              <div className="col-6 col-md-3">
-                <label className="form-label">Rows per page</label>
-                <select
-                  className="form-select"
-                  value={rowsPerPage}
-                  onChange={(e) => {
-                    setRowsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                </select>
+              <div>
+                <NavLink to="/admin/reviews/add" className="btn btn-md btn-dark">
+                  <i className="bi bi-plus me-2"></i>
+                  Thêm review
+                </NavLink>
               </div>
             </div>
           </div>
+
+          {targetId && (
+            <div className="px-3 pb-3">
+              <span className="badge text-bg-secondary">
+                Đang lọc theo FilmId: {targetId}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* List card (table) */}
@@ -202,10 +105,10 @@ const Reviews = () => {
           <div className="card-body">
             <h5 className="card-title fw-bold mb-3">Reviews List</h5>
 
-            {loading && <div className="text-muted small">Loading reviews…</div>}
-            {error && <div className="text-danger small">Error: {error}</div>}
+            {reviewsLoading && <div className="text-muted small">Loading reviews…</div>}
+            {reviewsError && <div className="text-danger small">Error: {reviewsError}</div>}
 
-            {!loading && !error && (
+            {!reviewsLoading && !reviewsError && (
               <>
                 <div className="table-responsive">
                   <table className="table align-middle">
@@ -218,55 +121,49 @@ const Reviews = () => {
                         <th scope="col">Content</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
+                        <th scope="col" className="text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {pageReviews.map((r) => (
+                      {(filteredReviews?.data || []).map((r) => (
                         <tr key={r.id}>
                           <td className="text-break">{r.id}</td>
-                          <td>{r.film}</td>
-                          <td>{r.reviewer}</td>
+                          <td>{r.movieId}</td>
+                          <td>{r.accountId}</td>
                           <td>{r.rating}</td>
-                          <td className="text-wrap" style={{ maxWidth: 360 }}>{r.content}</td>
-                          <td>{r.createdAt}</td>
-                          <td>{r.updatedAt}</td>
+                          <td className="text-wrap" style={{ maxWidth: 360 }}>{r.comment}</td>
+                          <td>{r.createdAt?.substring?.(0, 10)}</td>
+                          <td>{r.updatedAt?.substring?.(0, 10)}</td>
+                          <td className="text-end">
+                            <div className="d-flex justify-content-evenly">
+                              <NavLink
+                                to={`/admin/reviews/edit/${r.id}`}
+                                className="btn btn-primary"
+                              >
+                                <i className="bi bi-pencil"></i>
+                              </NavLink>
+                              <div className="ps-2 border-secondary border-start ">
+                                <button
+                                  type="button"
+                                  className="btn btn-danger"
+                                  onClick={() => onDelete(r.id)}
+                                >
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                {pageReviews.length === 0 && (
-                  <div className="text-muted small">No reviews found.</div>
-                )}
-
-                {/* Pagination */}
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                  <span className="text-muted small">
-                    {filteredReviews.length === 0
-                      ? "0-0 of 0"
-                      : `${startIndex + 1}-${Math.min(
-                          startIndex + rowsPerPage,
-                          filteredReviews.length
-                        )} of ${filteredReviews.length}`}
-                  </span>
-                  <div className="btn-group">
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={prevPage}
-                      disabled={currentPage === 1}
-                    >
-                      Prev
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={nextPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </>
             )}
           </div>

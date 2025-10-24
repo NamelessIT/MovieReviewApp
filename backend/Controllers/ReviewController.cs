@@ -50,6 +50,29 @@ namespace backend.Controllers
             return Ok(new { message = "Get reviews by account ID successfully", data = reviews ?? [], status = 200 });
         }
 
+        [HttpGet("account/{accountId}/film/{filmId}")]
+        public async Task<IActionResult> GetReviewByAccountIdAndFilmId(int accountId, int filmId)
+        {
+            var review = await _reviewRepository.GetReviewByAccountIdAndFilmIdAsync(accountId, filmId);
+            if (review == null)
+            {
+                return NotFound(new { message = "Review not found", status = 404 });
+            }
+            return Ok(new { message = "Get review successfully", data = review, status = 200 });
+        }
+
+        [HttpGet("admin/pagination")]
+        public async Task<IActionResult> GetReviewWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? searchKeyword)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
+            }
+
+            var users = await _reviewRepository.GetReviewAdminWithPagination(pageNumber, pageSize, searchKeyword);
+            return Ok(new { message = "Get accounts with pagination successfully", data = users ?? null, status = 200 });
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromBody] Review review)
         {

@@ -29,6 +29,18 @@ namespace backend.Controllers
             return Ok(new { message = "Get total quantity user successfully", data = total, status = 200 });
         }
 
+        [HttpGet("admin/pagination")]
+        public async Task<IActionResult> GetUserWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? searchKeyword)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
+            }
+
+            var users = await _userRepository.GetUserAdminWithPagination(pageNumber, pageSize, searchKeyword);
+            return Ok(new { message = "Get accounts with pagination successfully", data = users ?? null, status = 200 });
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
@@ -41,6 +53,7 @@ namespace backend.Controllers
             }
             return  Ok(new { message = "Get user successfully", data = user, status = 200 });
         }
+        
 
         [HttpGet("search/{keyword}")]
         public async Task<IActionResult> SearchUsersByName(string keyword)

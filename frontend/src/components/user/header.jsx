@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react"
-import { Search, Menu, User } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Search, Menu, User, Film } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CardFilm } from "@/components/ui/CardFilm"
 import axios from "axios"
 
 export function Header() {
+  const navigate = useNavigate()
   const [searchKeyword, setSearchKeyword] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
@@ -63,8 +65,7 @@ export function Header() {
   }
 
   const handleCardClick = (movie) => {
-    // TODO: navigate(`/film/${movie.id}`) nếu bạn có router
-    console.log("Clicked movie:", movie)
+    window.location.href = `/user/movie/${movie.id}`
     setShowDropdown(false)
   }
   return (
@@ -72,9 +73,20 @@ export function Header() {
       <div className="max-w-7xl mx-auto flex items-center header-flex">
         {/* Logo */}
         <div className="flex items-center space-x-4 header">
-          <h1 className="text-xl font-bold text-foreground text-White">SuggestFilm</h1>
-          <Button variant="ghost" size="sm" className=" header-menu-btn">
-            <Menu className="h-5 w-5" />
+          <h1 
+            className="text-xl font-bold text-foreground text-White cursor-pointer"
+            onClick={() => navigate("/user/homepage")}
+          >
+            SuggestFilm
+          </h1>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="header-menu-btn"
+            onClick={() => navigate("/user/movies")}
+          >
+            <Film className="h-5 w-5 mr-2" />
+            <span className="hidden md:inline">Danh sách phim</span>
           </Button>
         </div>  
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
-import { Play, Plus, Star, ChevronLeft, ChevronRight } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Play, Plus, Star, ChevronLeft, ChevronRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import axios from "axios"
+import Swal from "sweetalert2"
 
 /**
  * @typedef {Object} Movie
@@ -20,20 +22,25 @@ import axios from "axios"
  */
 
 export function MovieGrid({ title, showViewAll = true }) {
+  const navigate = useNavigate()
   const [allMovies, setAllMovies] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState({}) // ✅ trạng thái lưu phim nào đã thêm vào favorites
+
   const moviesPerPage = 5
 
   const totalPages = Math.ceil(allMovies.length / moviesPerPage)
   const startIndex = (currentPage - 1) * moviesPerPage
   const endIndex = startIndex + moviesPerPage
   const currentMovies = allMovies.slice(startIndex, endIndex)
+  
 
 useEffect(() => {
   const fetchMovies = async () => {
     setLoading(true)
+    const currentAccountId = 1 // ⚡ tạm thời cố định user id
+
     try {
       // 1️⃣ Lấy danh sách genre chưa bị ẩn
       const genreRes = await axios.get("http://localhost:5003/api/genre/all-exist")
@@ -43,7 +50,7 @@ useEffect(() => {
       const ratingRes = await axios.get("http://localhost:5003/api/Review/admin/GetAverageRatings")
       const ratingData = ratingRes?.data?.data || [] // mảng { movieId, title, averageRating }
 
-      // 3️⃣ Chọn endpoint phim
+      // 3️⃣ Xác định endpoint phim
       let filmEndpoint = ""
       if (title === "Newest") {
         filmEndpoint = "http://localhost:5003/api/Film/newest"
@@ -60,10 +67,10 @@ useEffect(() => {
         films = fallback.data.data || []
       }
 
-      // 4️⃣ Gắn genre + rating vào từng film
+      // 4️⃣ Gắn genre, rating, và trạng thái yêu thích
       const filmsWithDetails = await Promise.all(
         films.map(async (film) => {
-          // Lấy danh sách thể loại theo film
+          // Lấy danh sách thể loại
           const fgRes = await axios.get(`http://localhost:5003/api/FilmGenre/GetByFilmId/${film.id}`)
           const filmGenres = fgRes.data.data || []
 
@@ -74,9 +81,25 @@ useEffect(() => {
             })
             .filter(Boolean)
 
-          // Lấy rating trung bình từ danh sách ratingData
+          // Lấy rating trung bình
           const filmRatingObj = ratingData.find((r) => r.movieId === film.id)
-          const averageRating = filmRatingObj ? filmRatingObj.averageRating : 0 // ⚡ nếu null → 0
+          const averageRating = filmRatingObj ? filmRatingObj.averageRating : 0
+
+          // ⚡ Kiểm tra review của accountId hiện tại để xác định trạng thái favorites
+          let isFavorite = false
+          try {
+            const reviewRes = await axios.get(
+              `http://localhost:5003/api/Review/account/${currentAccountId}/film/${film.id}`
+            )
+            if (reviewRes?.data?.data?.favorites === true) {
+              isFavorite = true
+            }
+          } catch (err) {
+            // 404 = chưa có review, bỏ qua
+            if (err.response?.status !== 404) {
+              console.warn("⚠️ Lỗi khi kiểm tra favorites:", err.message)
+            }
+          }
 
           return {
             id: film.id,
@@ -86,12 +109,17 @@ useEffect(() => {
             year: new Date(film.createdAt).getFullYear(),
             genre: genreNames,
             trailerUrl: film.trailerUrl || "",
-            rating: averageRating, // ✅ thêm rating
+            rating: averageRating,
+            favorites: isFavorite, // ✅ lưu trạng thái favorites
           }
         })
       )
 
+      // ✅ Cập nhật allMovies + favorites state
       setAllMovies(filmsWithDetails)
+      const favMap = {}
+      filmsWithDetails.forEach((f) => (favMap[f.id] = f.favorites))
+      setFavorites(favMap)
     } catch (err) {
       console.error("❌ Error fetching movies:", err)
     } finally {
@@ -101,6 +129,7 @@ useEffect(() => {
 
   fetchMovies()
 }, [title])
+
 
 
   // ✅ Không còn scroll to top khi đổi trang
@@ -122,35 +151,61 @@ useEffect(() => {
 
     /** ==========================
    * 🧩 HÀM 1: Xử lý khi bấm nút "Play"
-   * Mục tiêu: mở link trailer Youtube (film.trailerUrl)
+   * Mục tiêu: chuyển đến trang chi tiết phim
    * ========================== */
-  const handlePlayClick = (movie) => {
-    console.log("Play trailer for movie:", movie)
-    // 👉 TODO: bạn tự viết code mở trailerUrl
-    // Ví dụ:
-    // window.open(movie.trailerUrl, "_blank")
+  const handlePlayClick = (movie, e) => {
+    e.stopPropagation()
+    navigate(`/user/movie/${movie.id}`)
   }
 
   /** ==========================
    * 🧩 HÀM 2: Xử lý khi bấm nút "Add to List"
    * Mục tiêu: gọi API CreateFavorites và đổi icon Plus → Check khi thành công
    * ========================== */
-  const handleAddToFavorites = async (movie) => {
-    console.log("Add to favorites movie:", movie)
-    try {
-      // 👉 TODO: bạn tự viết code gọi API
-      // const res = await axios.post("http://localhost:5003/api/Review/CreateFavorites", {
-      //   accountId: 1,
-      //   filmId: movie.id,
-      //   favorites: true,
-      // })
-      // if (res.status === 200) {
-      //   setFavorites((prev) => ({ ...prev, [movie.id]: true }))
-      // }
-    } catch (err) {
-      console.error("Error adding to favorites:", err)
+ const handleAddToFavorites = async (movie, e) => {
+  e.stopPropagation()
+  const currentAccountId = 1 // ✅ TODO: sau này thay bằng ID thật của user đang đăng nhập
+
+  // 🌀 Lấy trạng thái hiện tại (đã thích hay chưa)
+  const currentStatus = favorites[movie.id] || false
+  const newStatus = !currentStatus
+
+  // Cập nhật tạm thời trên UI (optimistic update)
+  setFavorites((prev) => ({ ...prev, [movie.id]: newStatus }))
+
+  try {
+    const res = await axios.post("http://localhost:5003/api/Review/CreateFavorites", {
+      accountId: currentAccountId,
+      filmId: movie.id,
+      favorites: newStatus,
+    })
+
+    if (res.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Thành công",
+        text: newStatus
+          ? "Đã thêm vào danh sách yêu thích 💖"
+          : "Đã xóa khỏi danh sách yêu thích ❌",
+        timer: 1500,
+        showConfirmButton: false,
+      })
     }
+  } catch (err) {
+    console.error("❌ Error toggling favorite:", err)
+
+    // ❗ Revert nếu lỗi
+    setFavorites((prev) => ({ ...prev, [movie.id]: currentStatus }))
+
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi",
+      text: "Không thể cập nhật danh sách yêu thích!",
+      confirmButtonText: "Đóng",
+    })
   }
+}
+
 
   if (loading) {
     return (
@@ -171,7 +226,12 @@ useEffect(() => {
             {title} <span className="text-muted-foreground text-lg">({allMovies.length} films)</span>
           </h2>
           {showViewAll && (
-            <Button variant="outline" size="sm" className="view-all-button">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="view-all-button"
+              onClick={() => navigate("/user/movies")}
+            >
               View All
             </Button>
           )}
@@ -182,7 +242,8 @@ useEffect(() => {
           {currentMovies.map((movie) => (
             <Card
               key={movie.id}
-              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 border-orange background-black "
+              className="group relative overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 border-orange background-black cursor-pointer"
+              onClick={(e) => handlePlayClick(movie, e)}
             >
               <div className="relative">
                 <img src={movie.image || "/placeholder.svg"} alt={movie.title} className="w-full h-72 object-cover" />
@@ -193,18 +254,20 @@ useEffect(() => {
                     <Button
                       size="sm"
                       className="bg-primary hover:bg-primary/90 btn-play movieGrid px-4"
-                      onClick={() => handlePlayClick(movie)}
+                      onClick={(e) => handlePlayClick(movie, e)}
                     >
                       <Play className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white text-white hover:bg-white/10 bg-transparent btn-plus movieGrid"
-                      onClick={() => handleAddToFavorites(movie)}
+                      onClick={(e) => handleAddToFavorites(movie, e)}
+                      className={`border-white text-white hover:bg-white/10 bg-transparent btn-plus movieGrid ${
+                        favorites[movie.id] ? "bg-green-500 border-green-500" : ""
+                      }`}
                     >
                       {favorites[movie.id] ? (
-                        <Check className="h-4 w-4 text-green-400" />
+                        <Check className="h-4 w-4 text-white" /> // ✅ Đổi sang dấu tick nếu đã yêu thích
                       ) : (
                         <Plus className="h-4 w-4" />
                       )}

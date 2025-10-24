@@ -5,7 +5,7 @@ using MovieReviewApp.backend.Repositories;
 namespace MovieReviewApp.backend.Controllers
 {
     [ApiController]
-    [Route("api/FilmDirectory")]
+    [Route("api/FilmDirector")]
     public class FilmDirectorController : ControllerBase
     {
         private readonly FilmDirectorRepository _filmDirectorRepository;
