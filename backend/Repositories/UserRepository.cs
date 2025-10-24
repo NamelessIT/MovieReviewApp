@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MovieReviewApp.backend.Repositories
 {
     public class UserRepository : GenericRepository<User>
-    {
+    {   
         public UserRepository(AppDbContext context) : base(context)
         {
         }

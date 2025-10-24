@@ -9,8 +9,7 @@ namespace backend.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserRepository _userRepository;
-
+        private readonly UserRepository _userRepository;                      
         public UserController(UserRepository userRepository)
         {
             _userRepository = userRepository;
