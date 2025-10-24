@@ -96,7 +96,7 @@ const Films = () => {
                         <th scope="col">Title</th>
                         <th scope="col">Director</th>
                         <th scope="col">Release Date</th>
-                        <th scope="col">IsDeleted</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
                         <th scope="col" className="text-center">
@@ -120,7 +120,9 @@ const Films = () => {
                                   : "text-bg-danger")
                               }
                             >
-                              {film.isDeleted.toString().toUpperCase()}
+                              {film.isDeleted.toString() === "false"
+                                ? "Hoạt động"
+                                : "Ngừng hoạt động"}
                             </span>
                           </td>
                           <td>{film.createdAt.substring(0, 10)}</td>

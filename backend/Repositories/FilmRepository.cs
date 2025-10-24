@@ -46,6 +46,7 @@ namespace MovieReviewApp.backend.Repositories
             if (entity != null)
             {
                 entity.isDeleted = true;
+                entity.UpdatedAt = DateTime.UtcNow;
                 _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }

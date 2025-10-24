@@ -2,6 +2,7 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using backend.DTOs;
 namespace backend.Controllers
 {
     // [Authorize]
@@ -63,36 +64,42 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        public async Task<IActionResult> CreateUser([FromBody] UserAdminDTO user)
         {
             if (user == null)
             {
                 return BadRequest();
             }
-            await _userRepository.AddAsync(user);
+            await _userRepository.CreateUser(user);
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserAdminDTO user)
         {
             try
             {
                 if (user == null)
                 {
+                    Console.WriteLine("Received null user object in UpdateUser.");
                     return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ." });
                 }
                 var existingUser = await _userRepository.GetByIdAsync(id);
                 if (existingUser == null)
                 {
-                    return NotFound(new { message = "user không tồn tại." });
+                    return NotFound(new { message = "User không tồn tại." });
                 }
-                await _userRepository.UpdateAsync(user);
-                return NoContent();
+                await _userRepository.UpdateUser(id, user);
+                return Ok(new { message = "User updated successfully", data = user, status = 200 });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Đã xảy ra lỗi khi cập nhật user.", error = ex.Message });
+                // Xử lý lỗi khác nếu cần
+                return StatusCode(500, new { message = "An error occurred while updating the account.", error = ex.Message });
             }
         }
 

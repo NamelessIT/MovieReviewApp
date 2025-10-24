@@ -9,6 +9,7 @@ import UserAdmin from "../page/admin/User.jsx";
 import ReviewAdmin from "../page/admin/Review.jsx";
 import FilmModal from "../components/modal/admin/FilmModal.jsx";
 import AccountModal from "../components/modal/admin/AccountModal.jsx";
+import UserModal from "../components/modal/admin/UserModal.jsx";
 const UserRoutes = () => {
   return (
     
@@ -27,6 +28,8 @@ const UserRoutes = () => {
         <Route path="/admin/films/edit/:filmId" element={<FilmModal onMode="edit" />} />
         <Route path="/admin/accounts/add" element={<AccountModal onMode="add" />} />
         <Route path="/admin/accounts/edit/:accountId" element={<AccountModal onMode="edit" />} />
+        <Route path="/admin/users/add" element={<UserModal onMode="add" />} />
+        <Route path="/admin/users/edit/:userId" element={<UserModal onMode="edit" />} />
       </Routes>
   );
 }; export default UserRoutes;

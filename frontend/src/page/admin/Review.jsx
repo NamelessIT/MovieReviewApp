@@ -3,10 +3,11 @@ import ReviewsService from "../../service/admin/ReviewService";
 import { LayoutWrapper } from "../../components/admin/LayoutWrapper";
 import Pagination from "../../components/pagination/Pagination";
 import { NavLink } from "react-router-dom";
+import { confirmDelete } from "../../components/common/Alert";
 
 const Reviews = () => {
   // giống Film.jsx: state phân trang + tìm kiếm
-  const rowsPerPage = 6;
+  const rowsPerPage = 5;
   const [filteredReviews, setFilteredReviews] = useState([]); // set = response.data
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsError, setReviewsError] = useState(null);
@@ -14,25 +15,17 @@ const Reviews = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Lấy filmId trên URL (?id=...) nếu có, để filter review theo phim y như logic cũ
-  const [targetId, setTargetId] = useState(null);
-  useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("id");
-    setTargetId(id || null);
-  }, []);
-
   const loadData = async () => {
     try {
       setReviewsLoading(true);
       const response = await ReviewsService.getAllReviewsWithPagination(
         currentPage,
         rowsPerPage,
-        searchTerm,
-        targetId // optional: filter theo filmId nếu có
+        searchTerm
       );
 
       // Theo pattern Film.jsx: component giữ response.data
-      setFilteredReviews(response || []);
+      setFilteredReviews(response.data || []);
       setReviewsError(null);
 
       // Tổng trang: lấy từ response.data.totalPages nếu có, mặc định 1
@@ -48,7 +41,7 @@ const Reviews = () => {
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchTerm, targetId]);
+  }, [currentPage, searchTerm]);
 
   const handlePageChange = (event) => {
     // react-paginate trả index bắt đầu 0 → +1 để khớp currentPage
@@ -72,32 +65,17 @@ const Reviews = () => {
           <h1 className="fw-bold m-2">Quản lý đánh giá</h1>
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center">
-              <div className="position-relative" style={{ width: "300px" }}>
+              <div className="position-relative" style={{ width: "350px" }}>
                 <i className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted" />
                 <input
                   className="form-control ps-5"
-                  placeholder="Tìm kiếm theo phim, người review, nội dung…"
+                  placeholder="Tìm kiếm theo phim, người review..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
-              <div>
-                <NavLink to="/admin/reviews/add" className="btn btn-md btn-dark">
-                  <i className="bi bi-plus me-2"></i>
-                  Thêm review
-                </NavLink>
-              </div>
             </div>
           </div>
-
-          {targetId && (
-            <div className="px-3 pb-3">
-              <span className="badge text-bg-secondary">
-                Đang lọc theo FilmId: {targetId}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* List card (table) */}
@@ -105,8 +83,12 @@ const Reviews = () => {
           <div className="card-body">
             <h5 className="card-title fw-bold mb-3">Reviews List</h5>
 
-            {reviewsLoading && <div className="text-muted small">Loading reviews…</div>}
-            {reviewsError && <div className="text-danger small">Error: {reviewsError}</div>}
+            {reviewsLoading && (
+              <div className="text-muted small">Loading reviews…</div>
+            )}
+            {reviewsError && (
+              <div className="text-danger small">Error: {reviewsError}</div>
+            )}
 
             {!reviewsLoading && !reviewsError && (
               <>
@@ -119,34 +101,60 @@ const Reviews = () => {
                         <th scope="col">Reviewer</th>
                         <th scope="col">Rating</th>
                         <th scope="col">Content</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
-                        <th scope="col" className="text-center">Actions</th>
+                        <th scope="col" className="text-center">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {(filteredReviews?.data || []).map((r) => (
                         <tr key={r.id}>
-                          <td className="text-break">{r.id}</td>
-                          <td>{r.movieId}</td>
-                          <td>{r.accountId}</td>
-                          <td>{r.rating}</td>
-                          <td className="text-wrap" style={{ maxWidth: 360 }}>{r.comment}</td>
+                          <td>{r.id}</td>
+                          <td style={{ maxWidth: 200 }}>
+                            <div className="text-muted">ID: {r.movieId}</div>
+                            <div>{r.movieTitle}</div>
+                          </td>
+                          <td>
+                            <div className="text-muted">ID: {r.accountId}</div>
+                            <div>{r.accountName}</div>
+                          </td>
+                          <td>
+                            {r.rating}{" "}
+                            <i className="bi bi-star-fill text-warning"></i>
+                          </td>
+                          <td className="text-wrap" style={{ maxWidth: 300 }}>
+                            {r.comment}
+                          </td>
+                          <td>
+                            <span
+                              className={
+                                "badge rounded-pill " +
+                                (r.isDeleted.toString() === "false"
+                                  ? "text-bg-success"
+                                  : "text-bg-danger")
+                              }
+                            >
+                              {r.isDeleted.toString() === "false"
+                                ? "Hoạt động"
+                                : "Ngừng hoạt động"}
+                            </span>
+                          </td>
                           <td>{r.createdAt?.substring?.(0, 10)}</td>
                           <td>{r.updatedAt?.substring?.(0, 10)}</td>
                           <td className="text-end">
-                            <div className="d-flex justify-content-evenly">
-                              <NavLink
-                                to={`/admin/reviews/edit/${r.id}`}
-                                className="btn btn-primary"
-                              >
-                                <i className="bi bi-pencil"></i>
-                              </NavLink>
-                              <div className="ps-2 border-secondary border-start ">
+                            <div className="d-flex justify-content-center align-items-center">
+                              <div>
                                 <button
                                   type="button"
                                   className="btn btn-danger"
-                                  onClick={() => onDelete(r.id)}
+                                  onClick={() =>
+                                    confirmDelete("Đánh giá", r.id, () =>
+                                      onDelete(r.id)
+                                    )
+                                  }
                                 >
                                   <i className="bi bi-trash"></i>
                                 </button>

@@ -2,6 +2,7 @@ using MovieReviewApp.backend.Models;
 using MovieReviewApp.backend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using backend.DTOs;
 namespace MovieReviewApp.backend.Repositories
 {
     public class ReviewRepository : GenericRepository<Review>
@@ -36,19 +37,53 @@ namespace MovieReviewApp.backend.Repositories
                 .FirstOrDefaultAsync(r => r.Account.Id == accountId && r.Film.Id == filmId && !r.isDeleted);
         }
 
-        public async Task<List<Review>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
+        public async Task<PaginatedResponse<ReviewAdminDTO>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
         {
-            var query = _context.Set<Review>().AsQueryable();
+            // IQueryable không thực thi ngay, nó chỉ xây dựng câu lệnh SQL
+            // 1) Build base query and include navigation properties when projecting
+            var baseQuery = _context.Set<Review>()
+                .Where(r => r.Comment != null);
 
+            // 2) Apply search if provided (search across film title, account name or comment)
             if (!string.IsNullOrEmpty(searchKeyword))
             {
-                query = query.Where(u => u.Comment != null && u.Comment.Contains(searchKeyword));
+                baseQuery = baseQuery.Where(r =>
+                    (r.Film != null && r.Film.Title != null && r.Film.Title.Contains(searchKeyword))
+                    || (r.Account != null && r.Account.Username.Contains(searchKeyword))
+                    || (r.Comment != null && r.Comment.Contains(searchKeyword))
+                );
             }
 
-            return await query
+            // 3) Count total records for pagination
+            var totalRecords = await baseQuery.CountAsync();
+
+            // 4) Project to DTO (EF Core will translate navigation property access to JOINs)
+            var data = await baseQuery
+                .OrderByDescending(r => r.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Select(r => new ReviewAdminDTO
+                {
+                    Id = r.Id,
+                    MovieId = r.MovieId,
+                    MovieTitle = r.Film != null ? r.Film.Title : null,
+                    AccountId = r.AccountId,
+                    AccountName = r.Account != null ? r.Account.Username : null,
+                    Rating = r.Rating,
+                    Favorites = r.Favorites,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt,
+                    UpdatedAt = r.UpdatedAt,
+                    isDeleted = r.isDeleted
+                })
                 .ToListAsync();
+
+            return new PaginatedResponse<ReviewAdminDTO>
+            {
+                Data = data,
+                TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
+                CurrentPage = pageNumber
+            };
         }
 
         public override async Task DeleteAsync(int id)
@@ -56,6 +91,7 @@ namespace MovieReviewApp.backend.Repositories
             var entity = await GetByIdAsync(id);
             if (entity != null)
             {
+                entity.UpdatedAt = DateTime.UtcNow;
                 entity.isDeleted = true;
                 _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
@@ -193,7 +229,7 @@ namespace MovieReviewApp.backend.Repositories
 
             return result;
         }
-        
+
         public async Task<List<FilmReviewCountDTO>> GetFilmReviewCounts()
         {
             // 1. LEFT JOIN: EF Core tự động xử lý JOIN khi sử dụng Navigation Property
@@ -214,4 +250,4 @@ namespace MovieReviewApp.backend.Repositories
             return result;
         }
     }
-}   
+}

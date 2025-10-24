@@ -3,6 +3,7 @@ import UsersService from "../../service/admin/UserService";
 import { LayoutWrapper } from "../../components/admin/LayoutWrapper";
 import Pagination from "../../components/pagination/Pagination";
 import { NavLink } from "react-router-dom";
+import { confirmDelete } from "../../components/common/Alert";
 
 const Users = () => {
   // phân trang
@@ -22,11 +23,7 @@ const Users = () => {
         rowsPerPage,
         searchTerm
       );
-      console.log(response);
-      
-      // Film.jsx đang setFilteredFilms(response.data) và truy cập (filteredFilms?.data || [])
-      // => giữ pattern tương tự cho Users để khỏi ảnh hưởng phần còn lại
-      setFilteredUsers(response || []);
+      setFilteredUsers(response.data || []);
       setUsersError(null);
       setTotalPages(response?.data?.totalPages || 1);
     } catch (error) {
@@ -68,7 +65,7 @@ const Users = () => {
                 <i className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted" />
                 <input
                   className="form-control ps-5"
-                  placeholder="Tìm kiếm theo tên, email…"
+                  placeholder="Tìm kiếm theo tên người dùng..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -122,12 +119,14 @@ const Users = () => {
                             <span
                               className={
                                 "badge rounded-pill " +
-                                (String(u.status).toLowerCase() === "active"
+                                (u.isDeleted.toString() === "false"
                                   ? "text-bg-success"
-                                  : "text-bg-secondary")
+                                  : "text-bg-danger")
                               }
                             >
-                              {u.status}
+                              {(u.isDeleted.toString() === "false"
+                                  ? "Hoạt động"
+                                  : "Ngừng hoạt động")}
                             </span>
                           </td>
                           <td>{u.createdAt?.substring?.(0, 10)}</td>
@@ -144,7 +143,11 @@ const Users = () => {
                                 <button
                                   type="button"
                                   className="btn btn-danger"
-                                  onClick={() => onDelete(u.id)}
+                                  onClick={() =>
+                                    confirmDelete("Tài khoản", u.id, () =>
+                                      onDelete(u.id)
+                                    )
+                                  }
                                 >
                                   <i className="bi bi-trash"></i>
                                 </button>

@@ -1,39 +1,34 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { LayoutWrapper } from "../../admin/LayoutWrapper";
 import { useNavigate, useParams } from "react-router-dom";
 import AccountService from "../../../service/admin/AccountService.jsx";
 import { AlertSuccess, AlertError } from "../../common/Alert.jsx";
-const AccountModal = ({ onMode }) => {
-  // Tên 'accountId' ở đây phải khớp với tên đặt trong Route path
-  const { accountId } = useParams();
-  const roles = [
-    { id: "0", name: "Admin" },
-    { id: "1", name: "User" },
-  ];
+import UserService from "../../../service/admin/UserService.jsx";
+const UserModal = ({ onMode }) => {
+  // Tên 'userId' ở đây phải khớp với tên đặt trong Route path
+  const { userId } = useParams();
+  const [loading, setLoadingData] = useState(true);
+  const navigate = useNavigate();
+  // trạng thái người dùng để chọn khi tạo tài khoản
   const status = [
     { id: "false", name: "Hoạt động" },
     { id: "true", name: "Ngừng hoạt động" },
   ];
-  const navigate = useNavigate();
-  const [users, setUsers] = useState([]); // List of users for dropdown
-  const [loading, setLoadingData] = useState(true);
   // Form data
   const [formData, setFormData] = useState({
-    userId: "",
-    username: "",
-    role: "",
+    id: "",
+    email: "",
+    fullName: "",
     isDeleted: false,
   });
 
-  // Fetch directors, genres, actors on mount
+  // Fetch danh sách người dùng để chọn khi tạo tài khoản
   const loadData = async () => {
     try {
       setLoadingData(true);
-      const dataUsers = await AccountService.getUsersWithoutAccount();
-      setUsers(dataUsers.data || []);
       if (onMode === "edit") {
-        const accountData = await AccountService.getAccountById(accountId);
-        setFormData(accountData.data);
+        const userData = await UserService.getUserById(userId);
+        setFormData(userData.data);
       }
     } catch (err) {
       console.error("Error loading data:", err);
@@ -50,24 +45,6 @@ const AccountModal = ({ onMode }) => {
     }));
   };
 
-  const removeAllWhitespace = (str) => {
-    if (typeof str !== "string") {
-      return str; // Trả về nguyên bản nếu không phải là chuỗi
-    }
-    return str.replace(/\s/g, "");
-  };
-  const handleUserNameChange = (e) => {
-    // 1. Lấy ra userId vừa được chọn (đây là một chuỗi)
-    const selectedUserId = e.target.value;
-    // Tìm user tương ứng trong danh sách users
-    const selectedUser = users.find((user) => user.userId == selectedUserId);
-    // 2. Cập nhật formData.userId
-    setFormData((prev) => ({
-      ...prev,
-      userId: selectedUserId,
-      username: removeAllWhitespace(selectedUser.userName),
-    }));
-  };
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,17 +52,16 @@ const AccountModal = ({ onMode }) => {
     try {
       // Submit form data
       const payload = {
-        userId: parseInt(formData.userId),
-        username: formData.username,
-        role: formData.role,
+        fullName: formData.fullName,
+        email: formData.email,
         isDeleted: formData.isDeleted === "true" ? true : false,
       };
       if (onMode === "edit") {
-        await AccountService.update(accountId, payload);
-        AlertSuccess("Cập nhật tài khoản thành công");
+        await UserService.update(userId, payload);
+        AlertSuccess("Cập nhật người dùng thành công");
       } else {
-        await AccountService.create(payload);
-        AlertSuccess("Tạo tài khoản thành công");
+        await UserService.create(payload);
+        AlertSuccess("Tạo người dùng thành công");
       }
     } catch (err) {
       console.error("Error submitting form:", err);
@@ -93,11 +69,10 @@ const AccountModal = ({ onMode }) => {
       // setError("Đã xảy ra lỗi. Vui lòng thử lại.");
     } finally {
       setLoadingData(false);
-      navigate("/admin/accounts");
+      navigate("/admin/users");
     }
   };
 
-  
   useEffect(() => {
     loadData();
   }, []);
@@ -107,12 +82,12 @@ const AccountModal = ({ onMode }) => {
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="display-6 fw-bold">
-            {onMode == "edit" ? "Chỉnh sửa tài khoản" : "Thêm tài khoản mới"}
+            {onMode == "edit" ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}
           </h1>
           <button
             type="button"
             className="btn btn-outline-secondary"
-            onClick={() => navigate("/admin/accounts")}
+            onClick={() => navigate("/admin/users")}
           >
             <i className="bi bi-arrow-left me-2"></i>
             Quay lại
@@ -141,73 +116,41 @@ const AccountModal = ({ onMode }) => {
                         <div className="mt-2">Đang tải dữ liệu...</div>
                       </div>
                     )}
-                    {/* Chọn Người dùng cần tạo tài khoản */}
-                    {onMode === "add" && (
-                      <div className="col-md-6">
-                        <label
-                          htmlFor="UserName"
-                          className="form-label fw-medium"
-                        >
-                          Chọn Người dùng <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className="form-select"
-                          id="userId"
-                          name="userId"
-                          value={formData.userId}
-                          onChange={handleUserNameChange}
-                          required
-                        >
-                          <option value="">Chọn người dùng</option>
-                          {users.map((user) => (
-                            <option key={user.userId} value={user.userId}>
-                              {user.userName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                    {/* Vai trò */}
-                    <div className="col-md-6">
-                      <label htmlFor="role" className="form-label fw-medium">
-                        Vai trò <span className="text-danger">*</span>
-                      </label>
-                      <select
-                        className="form-select"
-                        id="role"
-                        name="role"
-                        value={formData.role}
-                        onChange={(e) => handleInputChange(e)}
-                        required
-                      >
-                        <option value="">Chọn vai trò</option>
-                        {roles.map((role) => (
-                          <option key={role.id} value={role.name}>
-                            {role.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                   
                     {/* Tên tài khoản */}
                     <div className="col-md-6">
                       <label htmlFor="role" className="form-label fw-medium">
-                        Tên tài khoản <span className="text-danger">*</span>
+                        Họ và tên <span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
                         className="form-control"
-                        id="username"
-                        name="username"
-                        value={formData.username}
+                        id="fullName"
+                        name="fullName"
+                        value={formData.fullName}
                         onChange={handleInputChange}
-                        placeholder="Nhập tên tài khoản"
+                        placeholder="Nhập họ và tên"
                         required
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="email" className="form-label fw-medium">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Nhập email"
                       />
                     </div>
                     {/* Trạng thái tài khoản */}
                     <div className="col-md-6">
                       <label htmlFor="role" className="form-label fw-medium">
-                        Trạng thái tài khoản
+                        Trạng thái người dùng
                         <span className="text-danger">*</span>
                       </label>
                       <select
@@ -249,8 +192,8 @@ const AccountModal = ({ onMode }) => {
                                 <i className="bi bi-plus me-2"></i>
                               )}
                               {onMode === "edit"
-                                ? "Cập nhật tài khoản"
-                                : "Thêm tài khoản"}
+                                ? "Cập nhật người dùng"
+                                : "Thêm người dùng"}
                             </>
                           )}
                         </button>
@@ -267,4 +210,4 @@ const AccountModal = ({ onMode }) => {
   );
 };
 
-export default AccountModal;
+export default UserModal;
