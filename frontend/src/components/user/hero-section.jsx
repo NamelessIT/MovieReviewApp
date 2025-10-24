@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 
-export function HeroSection() {
+export function HeroSection({ onFavoritesChange, favoritesUpdated }) {
   const navigate = useNavigate()
   const [film, setFilm] = useState(null)
   const [genres, setGenres] = useState([])
   const [isFavorite, setIsFavorite] = useState(false) // giữ nguyên tên trạng thái
-  const currentAccountId = 1 // tạm thời cố định user id
+  const currentAccountId = localStorage.getItem("accountId") || 1
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +74,7 @@ export function HeroSection() {
     }
 
     fetchData()
-  }, [])
+  }, [favoritesUpdated])
 
   // đi tới trang chi tiết phim (khi bấm Watch)
   const handlePlayClick = (movie, e) => {
@@ -105,6 +105,9 @@ export function HeroSection() {
         timer: 1300,
         showConfirmButton: false,
       })
+      if (onFavoritesChange) onFavoritesChange()
+
+
     } catch (err) {
       console.error("❌ Error toggling favorite:", err)
       setIsFavorite(!newStatus) // revert

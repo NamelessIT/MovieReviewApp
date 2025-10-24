@@ -115,9 +115,7 @@ const Users = () => {
                           <td className="text-break">{u.id}</td>
                           <td>{u.fullName}</td>
                           <td>{u.email}</td>
-                          <td>
-                            <span
-                              className={
+                          <td className={
                                 "badge rounded-pill " +
                                 (u.isDeleted.toString() === "false"
                                   ? "text-bg-success"

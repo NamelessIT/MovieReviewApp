@@ -50,15 +50,14 @@ namespace backend.Controllers
             return Ok(new { message = "Get reviews by account ID successfully", data = reviews ?? [], status = 200 });
         }
 
+        // ✅ Lấy review mới nhất theo account + film
         [HttpGet("account/{accountId}/film/{filmId}")]
         public async Task<IActionResult> GetReviewByAccountIdAndFilmId(int accountId, int filmId)
         {
-            var review = await _reviewRepository.GetReviewByAccountIdAndFilmIdAsync(accountId, filmId);
+            var review = await _reviewRepository.GetLatestReviewByAccountAndFilmAsync(accountId, filmId);
             if (review == null)
-            {
                 return NotFound(new { message = "Review not found", status = 404 });
-            }
-            return Ok(new { message = "Get review successfully", data = review, status = 200 });
+            return Ok(new { message = "Get latest review successfully", data = review, status = 200 });
         }
 
         [HttpGet("admin/pagination")]
@@ -73,6 +72,42 @@ namespace backend.Controllers
             return Ok(new { message = "Get accounts with pagination successfully", data = users ?? null, status = 200 });
         }
 
+        // ✅ Lấy danh sách phim yêu thích của 1 tài khoản
+        [HttpGet("favorites/{accountId}")]
+        public async Task<IActionResult> GetAllFavoritesReviewsAsync(int accountId)
+        {
+            try
+            {
+                var favorites = await _reviewRepository.GetAllFavoritesReviewsAsync(accountId);
+                if (favorites == null || !favorites.Any())
+                {
+                    return Ok(new { message = "Người dùng chưa có phim yêu thích.", data = new List<Review>(), status = 200 });
+                }
+
+                // Trả về danh sách review kèm thông tin phim
+                return Ok(new
+                {
+                    message = "Lấy danh sách phim yêu thích thành công.",
+                    data = favorites.Select(r => new
+                    {
+                        r.Id,
+                        r.MovieId,
+                        r.Favorites,
+                        r.Rating,
+                        r.Comment,
+                        r.CreatedAt,
+                        r.UpdatedAt
+                    }),
+                    status = 200
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi khi lấy danh sách phim yêu thích.", error = ex.Message });
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromBody] Review review)
         {
@@ -84,31 +119,31 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetReviewById), new { id = review.Id }, review);
         }
 
-        // ✅ 1. API: Cập nhật hoặc tạo Rating
+        // ✅ Rating
         [HttpPost("CreateRating")]
         public async Task<IActionResult> CreateRating([FromBody] RatingRequest request)
         {
             if (request == null) return BadRequest("Invalid data.");
-            var review = await _reviewRepository.CreateReviewAsyncRating(request.AccountId, request.FilmId, request.Rating);
-            return Ok(review);
+            var review = await _reviewRepository.CreateOrUpdateRatingAsync(request.AccountId, request.FilmId, request.Rating);
+            return Ok(new { message = "Rating saved successfully", data = review, status = 200 });
         }
 
-        // ✅ 2. API: Cập nhật hoặc tạo Favorites
+        // ✅ Favorites
         [HttpPost("CreateFavorites")]
         public async Task<IActionResult> CreateFavorites([FromBody] FavoritesRequest request)
         {
             if (request == null) return BadRequest("Invalid data.");
-            var review = await _reviewRepository.CreateReviewAsyncFavorites(request.AccountId, request.FilmId, request.Favorites);
-            return Ok(review);
+            var review = await _reviewRepository.CreateOrUpdateFavoritesAsync(request.AccountId, request.FilmId, request.Favorites);
+            return Ok(new { message = "Favorites updated successfully", data = review, status = 200 });
         }
 
-        // ✅ 3. API: Cập nhật hoặc tạo Comment
+        // ✅ Comment
         [HttpPost("CreateComment")]
         public async Task<IActionResult> CreateComment([FromBody] CommentRequest request)
         {
             if (request == null) return BadRequest("Invalid data.");
-            var review = await _reviewRepository.CreateReviewAsyncComment(request.AccountId, request.FilmId, request.Comment);
-            return Ok(review);
+            var review = await _reviewRepository.CreateOrUpdateCommentAsync(request.AccountId, request.FilmId, request.Comment);
+            return Ok(new { message = "Comment saved successfully", data = review, status = 200 });
         }
 
 

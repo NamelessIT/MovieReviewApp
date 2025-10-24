@@ -50,6 +50,16 @@ namespace MovieReviewApp.backend.Repositories
             return account;
         }
 
+        public async Task<bool> ValidateLoginAsync(string username, string passwordHash)
+        {
+            var isValid = await _context.Set<Account>()
+                .AnyAsync(a => a.Username == username 
+                            && a.PasswordHash == passwordHash 
+                            && !a.isDeleted);
+            return isValid;
+        }
+
+
         public async Task<PaginatedResponse<AccountAdminDTO>> GetFilmAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
         {
             // IQueryable không thực thi ngay, nó chỉ xây dựng câu lệnh SQL
