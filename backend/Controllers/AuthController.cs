@@ -40,7 +40,6 @@ public class AuthController : ControllerBase
                         account.Id,
                         account.Username,
                         account.Role,
-                        UserFullName = account.User?.FullName
                     }
                 });
             }

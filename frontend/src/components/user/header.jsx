@@ -97,7 +97,7 @@ export function Header() {
   }
 
   return (
-    <header className="bg-background border-b border-border px-4 py-3 relative">
+    <header className="bg-background border-b border-border px-4 py-3 relative header-user">
       <div className="max-w-7xl mx-auto flex items-center justify-between header-flex">
 
         {/* Logo */}
@@ -123,13 +123,13 @@ export function Header() {
         <div className="relative hidden sm:block flex-1 mx-6" ref={dropdownRef}>
           <div className="flex items-center">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search movies..."
                 className="pl-10 w-full bg-secondary border-border"
                 value={searchKeyword}
                 onChange={handleChange}
               />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -172,10 +172,10 @@ export function Header() {
           </div>
 
           {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-36 bg-background border border-border rounded-lg shadow-md z-50">
+            <div className="absolute right-0 mt-2 w-36 bg-background rounded-lg shadow-md z-50">
               <Button 
                 variant="ghost" 
-                className="w-full flex items-center justify-start px-3 py-2 text-red-500 hover:bg-red-100"
+                className="w-full flex items-center justify-start px-3 py-2 text-red-500 hover:bg-red-100 logout"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

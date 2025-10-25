@@ -37,10 +37,9 @@ export default function AuthPage() {
 
         const data = res.data.data
         // ✅ Lưu thông tin vào localStorage
-        localStorage.setItem("accountId", data.Id)
-        localStorage.setItem("username", data.Username)
-        localStorage.setItem("role", data.Role)
-        localStorage.setItem("fullName", data.UserFullName || "")
+        localStorage.setItem("accountId", data.id)
+        localStorage.setItem("username", data.username)
+        localStorage.setItem("role", data.role)
 
         navigate("/user/homepage")
       } else {
@@ -49,13 +48,15 @@ export default function AuthPage() {
           fullName: formData.fullName || formData.username,
           email: formData.email,
         })
-        const newUserId = userRes.data.data.id
+        const newUserId = userRes.data.id
+        console.log("New User ID:", newUserId)
 
         // ✅ 2. Tạo account liên kết user vừa tạo
         const accRes = await axios.post("http://localhost:5003/api/account", {
           username: formData.username,
           password: formData.password,
           userId: newUserId,
+          role: "user",
         })
 
         if (accRes.status === 200 || accRes.status === 201) {
@@ -75,7 +76,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 authPage">
       <motion.div
         className="relative bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden w-full max-w-md"
         initial={{ opacity: 0, y: 50 }}
@@ -95,7 +96,7 @@ export default function AuthPage() {
         </div>
 
         {/* Form */}
-        <div className="relative overflow-hidden h-[380px]">
+        <div className="relative overflow-hidden h-[480px]">
           <AnimatePresence mode="wait">
             {isLogin ? (
               // ✅ FORM LOGIN
@@ -157,7 +158,7 @@ export default function AuthPage() {
                 exit={{ x: 300, opacity: 0 }}
                 transition={{ type: "spring", duration: 0.6 }}
                 onSubmit={handleSubmit}
-                className="absolute inset-0 flex flex-col justify-center p-8 space-y-4"
+                className="absolute inset-0 flex flex-col justify-center p-8 space-y-4 signupForm"
               >
                 <input
                   type="text"

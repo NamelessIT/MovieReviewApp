@@ -115,16 +115,18 @@ const Users = () => {
                           <td className="text-break">{u.id}</td>
                           <td>{u.fullName}</td>
                           <td>{u.email}</td>
-                          <td className={
+                          <td>
+                            <span
+                              className={
                                 "badge rounded-pill " +
                                 (u.isDeleted.toString() === "false"
                                   ? "text-bg-success"
                                   : "text-bg-danger")
                               }
                             >
-                              {(u.isDeleted.toString() === "false"
-                                  ? "Hoạt động"
-                                  : "Ngừng hoạt động")}
+                              {u.isDeleted.toString() === "false"
+                                ? "Hoạt động"
+                                : "Ngừng hoạt động"}
                             </span>
                           </td>
                           <td>{u.createdAt?.substring?.(0, 10)}</td>

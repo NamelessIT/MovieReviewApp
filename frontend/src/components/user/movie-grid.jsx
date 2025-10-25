@@ -114,9 +114,12 @@ useEffect(() => {
           let isFavorite = false
           try {
             const reviewRes = await axios.get(
-              `http://localhost:5003/api/Review/account/${currentAccountId}/film/${film.id}`
+              `http://localhost:5003/api/Review/account/${currentAccountId}/film/${film.id}`,
+                {
+                  validateStatus: (status) => status < 500, // ✅ Không throw lỗi nếu 404
+                }
             )
-            if (reviewRes?.data?.data?.favorites === true) {
+            if (reviewRes.status === 200 && reviewRes?.data?.data?.favorites === true) {
               isFavorite = true
             }
           } catch (err) {

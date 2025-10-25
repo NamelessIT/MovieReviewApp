@@ -48,7 +48,10 @@ export function HeroSection({ onFavoritesChange, favoritesUpdated }) {
         // 4️⃣ Kiểm tra trạng thái favorites hiện tại (GET review cho account-film)
         try {
           const reviewRes = await axios.get(
-            `http://localhost:5003/api/Review/account/${currentAccountId}/film/${filmId}`
+            `http://localhost:5003/api/Review/account/${currentAccountId}/film/${filmId}`,
+                {
+                  validateStatus: (status) => status < 500, // ✅ Không throw lỗi nếu 404
+                }
           )
           const reviewData = reviewRes?.data?.data
           setIsFavorite(Boolean(reviewData?.favorites))

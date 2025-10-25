@@ -55,8 +55,16 @@ namespace backend.Controllers
         public async Task<IActionResult> GetReviewByAccountIdAndFilmId(int accountId, int filmId)
         {
             var review = await _reviewRepository.GetLatestReviewByAccountAndFilmAsync(accountId, filmId);
-            if (review == null)
-                return NotFound(new { message = "Review not found", status = 404 });
+                if (review == null)
+                {
+                    // ✅ Trả về response mặc định thay vì 404
+                    return Ok(new 
+                    { 
+                        message = "No review found, returning default value", 
+                        data = new { favorites = false }, 
+                        status = 200 
+                    });
+                }
             return Ok(new { message = "Get latest review successfully", data = review, status = 200 });
         }
 

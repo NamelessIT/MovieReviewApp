@@ -45,7 +45,7 @@ namespace MovieReviewApp.backend.Repositories
             return await GetLatestReviewAsync(accountId, filmId);
         }
 
-        public async Task<List<Review>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
+        public async Task<PaginatedResponse<ReviewAdminDTO>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
         {
             // IQueryable không thực thi ngay, nó chỉ xây dựng câu lệnh SQL
             // 1) Build base query and include navigation properties when projecting
