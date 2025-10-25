@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 
-export function HeroSection() {
+export function HeroSection({ onFavoritesChange, favoritesUpdated }) {
   const navigate = useNavigate()
   const [film, setFilm] = useState(null)
   const [genres, setGenres] = useState([])
   const [isFavorite, setIsFavorite] = useState(false) // giữ nguyên tên trạng thái
-  const currentAccountId = 1 // tạm thời cố định user id
+  const currentAccountId = localStorage.getItem("accountId") || 1
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +48,10 @@ export function HeroSection() {
         // 4️⃣ Kiểm tra trạng thái favorites hiện tại (GET review cho account-film)
         try {
           const reviewRes = await axios.get(
-            `http://localhost:5003/api/Review/account/${currentAccountId}/film/${filmId}`
+            `http://localhost:5003/api/Review/account/${currentAccountId}/film/${filmId}`,
+                {
+                  validateStatus: (status) => status < 500, // ✅ Không throw lỗi nếu 404
+                }
           )
           const reviewData = reviewRes?.data?.data
           setIsFavorite(Boolean(reviewData?.favorites))
@@ -74,7 +77,7 @@ export function HeroSection() {
     }
 
     fetchData()
-  }, [])
+  }, [favoritesUpdated])
 
   // đi tới trang chi tiết phim (khi bấm Watch)
   const handlePlayClick = (movie, e) => {
@@ -105,6 +108,9 @@ export function HeroSection() {
         timer: 1300,
         showConfirmButton: false,
       })
+      if (onFavoritesChange) onFavoritesChange()
+
+
     } catch (err) {
       console.error("❌ Error toggling favorite:", err)
       setIsFavorite(!newStatus) // revert

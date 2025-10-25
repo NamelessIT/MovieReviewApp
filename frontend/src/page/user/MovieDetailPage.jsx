@@ -24,7 +24,7 @@ export default function MovieDetailPage() {
   const [showTrailer, setShowTrailer] = useState(false)
 
   // Tạm thời dùng ID cố định — sau này có thể lấy từ localStorage khi login
-  const currentAccountId = 1
+  const currentAccountId = localStorage.getItem("accountId") || 1
 
   useEffect(() => {
       const fetchFavoriteStatus = async () => {

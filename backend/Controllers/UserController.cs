@@ -70,8 +70,8 @@ namespace backend.Controllers
             {
                 return BadRequest();
             }
-            await _userRepository.CreateUser(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+            var createdUser =await _userRepository.CreateUser(user);
+            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
         }
 
         [HttpPut("{id}")]

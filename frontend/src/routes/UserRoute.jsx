@@ -10,6 +10,7 @@ import ReviewAdmin from "../page/admin/Review.jsx";
 import FilmModal from "../components/modal/admin/FilmModal.jsx";
 import AccountModal from "../components/modal/admin/AccountModal.jsx";
 import UserModal from "../components/modal/admin/UserModal.jsx";
+import AuthPage from "../page/Login/authPage.jsx";
 const UserRoutes = () => {
   return (
     
@@ -18,6 +19,7 @@ const UserRoutes = () => {
         <Route path="/user/homepage" element={<Homepage />} />
         <Route path="/user/movies" element={<MovieListPage />} />
         <Route path="/user/movie/:id" element={<MovieDetailPage />} />
+        <Route path="/auth" element={<AuthPage />} />
         {/* admin */}
         <Route path="/admin/homepage" element={<HomepageAdmin />} />
         <Route path="/admin/films" element={<FilmAdmin />} />

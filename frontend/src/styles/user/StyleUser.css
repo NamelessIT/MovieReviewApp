@@ -361,3 +361,31 @@
     transform: scale(1.2);
     transition: all 0.3s ease-in-out;
 }
+
+.authPage input{
+    margin: 5px 0 10px 0 !important;
+}
+
+.authPage button{
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+  .header-user .logout{
+    color: white !important;
+    border-radius: 10px;
+    height: 45px;
+    background-color: orange !important;
+  }
+
+  .header-user .logout:hover{
+    background-color: darkorange !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+    opacity: 0.8 !important;
+  }
+
+  .header-user .px-4 {
+    padding-right: 2.5rem !important;
+    padding-left: 0.5rem !important;
+  }

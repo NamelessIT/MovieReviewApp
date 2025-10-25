@@ -77,6 +77,8 @@ namespace backend.Controllers
             }
         }
 
+
+
         [HttpGet("admin/pagination")]
         public async Task<IActionResult> GetFilmsWithPagination([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? searchKeyword)
         {

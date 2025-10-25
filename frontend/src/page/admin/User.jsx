@@ -124,9 +124,9 @@ const Users = () => {
                                   : "text-bg-danger")
                               }
                             >
-                              {(u.isDeleted.toString() === "false"
-                                  ? "Hoạt động"
-                                  : "Ngừng hoạt động")}
+                              {u.isDeleted.toString() === "false"
+                                ? "Hoạt động"
+                                : "Ngừng hoạt động"}
                             </span>
                           </td>
                           <td>{u.createdAt?.substring?.(0, 10)}</td>

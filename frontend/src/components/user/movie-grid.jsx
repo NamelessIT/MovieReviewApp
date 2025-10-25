@@ -21,7 +21,7 @@ import Swal from "sweetalert2"
  * @property {boolean} [showViewAll]
  */
 
-export function MovieGrid({ title, showViewAll = true }) {
+export function MovieGrid({ title, showViewAll = true ,onFavoritesChange, favoritesUpdated}) {
   const navigate = useNavigate()
   const [allMovies, setAllMovies] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -34,46 +34,71 @@ export function MovieGrid({ title, showViewAll = true }) {
   const startIndex = (currentPage - 1) * moviesPerPage
   const endIndex = startIndex + moviesPerPage
   const currentMovies = allMovies.slice(startIndex, endIndex)
-  
+  const currentAccountId = localStorage.getItem("accountId") || 1
+
 
 useEffect(() => {
   const fetchMovies = async () => {
     setLoading(true)
-    const currentAccountId = 1 // ⚡ tạm thời cố định user id
 
     try {
-      // 1️⃣ Lấy danh sách genre chưa bị ẩn
+      // 1️⃣ Lấy danh sách genre
       const genreRes = await axios.get("http://localhost:5003/api/genre/all-exist")
       const allGenres = genreRes.data.data || []
 
-      // 2️⃣ Lấy rating trung bình của phim
+      // 2️⃣ Lấy rating trung bình
       const ratingRes = await axios.get("http://localhost:5003/api/Review/admin/GetAverageRatings")
-      const ratingData = ratingRes?.data?.data || [] // mảng { movieId, title, averageRating }
+      const ratingData = ratingRes?.data?.data || []
 
-      // 3️⃣ Xác định endpoint phim
-      let filmEndpoint = ""
-      if (title === "Newest") {
-        filmEndpoint = "http://localhost:5003/api/Film/newest"
-      } else if (title === "What to watch") {
-        filmEndpoint = "http://localhost:5003/api/Film/top-rated"
+      // 3️⃣ Xử lý theo loại MovieGrid
+      let films = []
+
+      if (title === "Favorites") {
+        // 👉 Lấy danh sách review yêu thích
+        const favRes = await axios.get(`http://localhost:5003/api/Review/favorites/${currentAccountId}`)
+        const favData = favRes?.data?.data || []
+
+        if (!favData.length) {
+          // Không có phim yêu thích → ẩn luôn MovieGrid này
+          setAllMovies([])
+          setLoading(false)
+          return
+        }
+
+        // Lấy danh sách ID phim yêu thích
+        const favoriteFilmIds = favData.map((f) => f.movieId)
+
+        // Gọi API lấy tất cả phim (để đối chiếu)
+        const filmRes = await axios.get("http://localhost:5003/api/film")
+        const allFilms = filmRes.data.data || []
+
+        // Lọc phim nằm trong danh sách yêu thích
+        films = allFilms.filter((film) => favoriteFilmIds.includes(film.id))
+      } else {
+        // Các grid khác (Newest / What to watch)
+        let filmEndpoint = ""
+        if (title === "Newest") {
+          filmEndpoint = "http://localhost:5003/api/film/newest"
+        } else if (title === "What to watch") {
+          filmEndpoint = "http://localhost:5003/api/film/top-rated"
+        }
+
+        const filmRes = await axios.get(filmEndpoint)
+        films = filmRes.data.data || []
+
+        // Nếu top-rated rỗng → fallback sang newest
+        if (title === "What to watch" && films.length === 0) {
+          const fallback = await axios.get("http://localhost:5003/api/film/newest")
+          films = fallback.data.data || []
+        }
       }
 
-      const filmRes = await axios.get(filmEndpoint)
-      let films = filmRes.data.data || []
-
-      // Nếu top-rated rỗng → fallback sang newest
-      if (title === "What to watch" && films.length === 0) {
-        const fallback = await axios.get("http://localhost:5003/api/Film/newest")
-        films = fallback.data.data || []
-      }
-
-      // 4️⃣ Gắn genre, rating, và trạng thái yêu thích
+      // 4️⃣ Gắn genre, rating, favorites
       const filmsWithDetails = await Promise.all(
         films.map(async (film) => {
-          // Lấy danh sách thể loại
-          const fgRes = await axios.get(`http://localhost:5003/api/FilmGenre/GetByFilmId/${film.id}`)
+          // Genre
+          const fgRes = await axios.get(`http://localhost:5003/api/filmGenre/GetByFilmId/${film.id}`)
           const filmGenres = fgRes.data.data || []
-
           const genreNames = filmGenres
             .map((fg) => {
               const g = allGenres.find((gg) => gg.id === fg.genreId && !gg.isDeleted)
@@ -81,24 +106,24 @@ useEffect(() => {
             })
             .filter(Boolean)
 
-          // Lấy rating trung bình
+          // Rating
           const filmRatingObj = ratingData.find((r) => r.movieId === film.id)
           const averageRating = filmRatingObj ? filmRatingObj.averageRating : 0
 
-          // ⚡ Kiểm tra review của accountId hiện tại để xác định trạng thái favorites
+          // Kiểm tra favorites
           let isFavorite = false
           try {
             const reviewRes = await axios.get(
-              `http://localhost:5003/api/Review/account/${currentAccountId}/film/${film.id}`
+              `http://localhost:5003/api/Review/account/${currentAccountId}/film/${film.id}`,
+                {
+                  validateStatus: (status) => status < 500, // ✅ Không throw lỗi nếu 404
+                }
             )
-            if (reviewRes?.data?.data?.favorites === true) {
+            if (reviewRes.status === 200 && reviewRes?.data?.data?.favorites === true) {
               isFavorite = true
             }
           } catch (err) {
-            // 404 = chưa có review, bỏ qua
-            if (err.response?.status !== 404) {
-              console.warn("⚠️ Lỗi khi kiểm tra favorites:", err.message)
-            }
+            if (err.response?.status !== 404) console.warn("⚠️ Lỗi khi kiểm tra favorites:", err.message)
           }
 
           return {
@@ -110,12 +135,11 @@ useEffect(() => {
             genre: genreNames,
             trailerUrl: film.trailerUrl || "",
             rating: averageRating,
-            favorites: isFavorite, // ✅ lưu trạng thái favorites
+            favorites: isFavorite,
           }
         })
       )
 
-      // ✅ Cập nhật allMovies + favorites state
       setAllMovies(filmsWithDetails)
       const favMap = {}
       filmsWithDetails.forEach((f) => (favMap[f.id] = f.favorites))
@@ -128,7 +152,8 @@ useEffect(() => {
   }
 
   fetchMovies()
-}, [title])
+}, [title,favoritesUpdated])
+
 
 
 
@@ -164,7 +189,6 @@ useEffect(() => {
    * ========================== */
  const handleAddToFavorites = async (movie, e) => {
   e.stopPropagation()
-  const currentAccountId = 1 // ✅ TODO: sau này thay bằng ID thật của user đang đăng nhập
 
   // 🌀 Lấy trạng thái hiện tại (đã thích hay chưa)
   const currentStatus = favorites[movie.id] || false
@@ -191,6 +215,22 @@ useEffect(() => {
         showConfirmButton: false,
       })
     }
+
+      if (onFavoritesChange) onFavoritesChange()
+
+
+        // ✅ Nếu đang ở trang Favorites thì cập nhật danh sách mà không reload
+      if (title === "Favorites") {
+        setAllMovies((prevMovies) => {
+          if (newStatus) {
+            // nếu vừa thêm mới, thêm phim này vào danh sách
+            return [...prevMovies, movie]
+          } else {
+            // nếu vừa bỏ thích, loại bỏ khỏi danh sách
+            return prevMovies.filter((m) => m.id !== movie.id)
+          }
+        })
+      }
   } catch (err) {
     console.error("❌ Error toggling favorite:", err)
 

@@ -57,7 +57,7 @@ namespace MovieReviewApp.backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateUser(UserAdminDTO user)
+        public async Task<User> CreateUser(UserAdminDTO user)
         {
             var newUser = new User
             {
@@ -68,6 +68,8 @@ namespace MovieReviewApp.backend.Repositories
             };
             await _context.Set<User>().AddAsync(newUser);
             await _context.SaveChangesAsync();
+            return newUser; // ✅ trả về entity có Id thật
+
         }
 
         public async Task<int> CountAllUsers()

@@ -31,10 +31,18 @@ namespace MovieReviewApp.backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Review?> GetReviewByAccountIdAndFilmIdAsync(int accountId, int filmId)
+        // ✅ Lấy Review mới nhất theo AccountId + FilmId
+        private async Task<Review?> GetLatestReviewAsync(int accountId, int filmId)
         {
-            return await _context.Set<Review>()
-                .FirstOrDefaultAsync(r => r.Account.Id == accountId && r.Film.Id == filmId && !r.isDeleted);
+            return await _context.Reviews
+                .Where(r => r.AccountId == accountId && r.MovieId == filmId && !r.isDeleted)
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefaultAsync();
+        }
+                // ✅ 4. Lấy review mới nhất (cho API /account/{accountId}/film/{filmId})
+        public async Task<Review?> GetLatestReviewByAccountAndFilmAsync(int accountId, int filmId)
+        {
+            return await GetLatestReviewAsync(accountId, filmId);
         }
 
         public async Task<PaginatedResponse<ReviewAdminDTO>> GetReviewAdminWithPagination(int pageNumber, int pageSize, string? searchKeyword)
@@ -115,23 +123,18 @@ namespace MovieReviewApp.backend.Repositories
             return await _context.Set<Review>().CountAsync();
         }
 
-        // ✅ 1. Hàm tạo hoặc cập nhật rating
-        public async Task<Review> CreateReviewAsyncRating(int accountId, int filmId, int rating)
+        // ✅ 1. Rating — tạo hoặc cập nhật trên review mới nhất
+        public async Task<Review> CreateOrUpdateRatingAsync(int accountId, int filmId, int rating)
         {
             if (rating < 1 || rating > 10)
                 throw new ArgumentException("Rating must be between 1 and 10.");
 
-            var review = await _context.Reviews
-                .FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == filmId);
+            var latestReview = await GetLatestReviewAsync(accountId, filmId);
 
-            if (review != null)
+            if (latestReview == null)
             {
-                review.Rating = rating;
-                review.UpdatedAt = DateTime.Now;
-            }
-            else
-            {
-                review = new Review
+                // ➕ Chưa có review nào, tạo mới
+                latestReview = new Review
                 {
                     AccountId = accountId,
                     MovieId = filmId,
@@ -140,29 +143,43 @@ namespace MovieReviewApp.backend.Repositories
                     Comment = string.Empty,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    isDeleted = false
                 };
-                await _context.Reviews.AddAsync(review);
+                await _context.Reviews.AddAsync(latestReview);
             }
-
-            await _context.SaveChangesAsync();
-            return review;
-        }
-
-        // ✅ 2. Hàm tạo hoặc cập nhật favorites
-        public async Task<Review> CreateReviewAsyncFavorites(int accountId, int filmId, bool favorites)
-        {
-            var review = await _context.Reviews
-                .FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == filmId);
-
-            if (review != null)
+            else if (string.IsNullOrEmpty(latestReview.Comment))
             {
-                review.Favorites = favorites;
-                review.UpdatedAt = DateTime.Now;
+                // 🔁 Nếu review mới nhất chưa có comment → chỉ update rating
+                latestReview.Rating = rating;
+                latestReview.UpdatedAt = DateTime.Now;
             }
             else
             {
-                review = new Review
+                // 🆕 Nếu review mới nhất đã có comment → tạo review mới, copy dữ liệu cũ
+                var newReview = new Review
+                {
+                    AccountId = accountId,
+                    MovieId = filmId,
+                    Rating = rating,
+                    Favorites = latestReview.Favorites,
+                    Comment = string.Empty,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                };
+                await _context.Reviews.AddAsync(newReview);
+            }
+
+            await _context.SaveChangesAsync();
+            return latestReview ?? throw new Exception("Unexpected error saving review.");
+        }
+
+        // ✅ 2. Favorites — tạo hoặc cập nhật trên review mới nhất
+        public async Task<Review> CreateOrUpdateFavoritesAsync(int accountId, int filmId, bool favorites)
+        {
+            var latestReview = await GetLatestReviewAsync(accountId, filmId);
+
+            if (latestReview == null)
+            {
+                latestReview = new Review
                 {
                     AccountId = accountId,
                     MovieId = filmId,
@@ -171,29 +188,54 @@ namespace MovieReviewApp.backend.Repositories
                     Comment = string.Empty,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    isDeleted = false
                 };
-                await _context.Reviews.AddAsync(review);
+                await _context.Reviews.AddAsync(latestReview);
             }
-
-            await _context.SaveChangesAsync();
-            return review;
-        }
-
-        // ✅ 3. Hàm tạo hoặc cập nhật comment
-        public async Task<Review> CreateReviewAsyncComment(int accountId, int filmId, string comment)
-        {
-            var review = await _context.Reviews
-                .FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == filmId);
-
-            if (review != null)
+            else if (string.IsNullOrEmpty(latestReview.Comment))
             {
-                review.Comment = comment;
-                review.UpdatedAt = DateTime.Now;
+                latestReview.Favorites = favorites;
+                latestReview.UpdatedAt = DateTime.Now;
             }
             else
             {
-                review = new Review
+                var newReview = new Review
+                {
+                    AccountId = accountId,
+                    MovieId = filmId,
+                    Rating = latestReview.Rating,
+                    Favorites = favorites,
+                    Comment = string.Empty,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                };
+                await _context.Reviews.AddAsync(newReview);
+            }
+
+            await _context.SaveChangesAsync();
+            return latestReview;
+        }
+        // ✅ 5. Lấy danh sách phim yêu thích (chỉ lấy review mới nhất theo MovieId + AccountId)
+        public async Task<List<Review>> GetAllFavoritesReviewsAsync(int accountId)
+        {
+            // Lọc review yêu thích (Favorites = true, chưa xóa)
+            var favoriteReviews = await _context.Reviews
+                .Where(r => r.AccountId == accountId && r.Favorites == true && !r.isDeleted)
+                .GroupBy(r => r.MovieId) // nhóm theo phim
+                .Select(g => g.OrderByDescending(r => r.CreatedAt).First()) // lấy review mới nhất
+                .ToListAsync();
+
+            return favoriteReviews;
+        }
+
+        // ✅ 3. Comment — tạo hoặc cập nhật, nếu có comment mới thì luôn tạo bản ghi mới
+        public async Task<Review> CreateOrUpdateCommentAsync(int accountId, int filmId, string comment)
+        {
+            var latestReview = await GetLatestReviewAsync(accountId, filmId);
+
+            if (latestReview == null)
+            {
+                // ➕ Tạo mới
+                var newReview = new Review
                 {
                     AccountId = accountId,
                     MovieId = filmId,
@@ -201,34 +243,58 @@ namespace MovieReviewApp.backend.Repositories
                     Favorites = false,
                     Comment = comment,
                     CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    isDeleted = false
+                    UpdatedAt = DateTime.Now
                 };
-                await _context.Reviews.AddAsync(review);
+                await _context.Reviews.AddAsync(newReview);
+            }
+            else
+            {
+                // 🆕 Luôn tạo mới khi có comment mới
+                var newReview = new Review
+                {
+                    AccountId = accountId,
+                    MovieId = filmId,
+                    Rating = latestReview.Rating,
+                    Favorites = latestReview.Favorites,
+                    Comment = comment,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                await _context.Reviews.AddAsync(newReview);
             }
 
             await _context.SaveChangesAsync();
-            return review;
+            return await GetLatestReviewAsync(accountId, filmId)
+                ?? throw new Exception("Error saving review comment.");
         }
 
-        // ✅ 4. Hàm tính điểm trung bình (bỏ qua rating = 0)
+
+        // ✅ 5. Tính điểm trung bình (chỉ lấy rating của review mới nhất mỗi AccountId)
         public async Task<List<FilmRatingDTO>> GetAverageRatings()
         {
-            var result = await _context.Reviews
-                .Where(r => r.Rating > 0 && !r.isDeleted) // loại bỏ review có rating = 0 hoặc bị xóa
-                .GroupBy(r => new { r.MovieId, r.Film.Title })
+            // Lấy review mới nhất mỗi (AccountId, MovieId)
+            var latestRatings = await _context.Reviews
+                .Where(r => !r.isDeleted && r.Rating > 0)
+                .GroupBy(r => new { r.AccountId, r.MovieId })
+                .Select(g => g.OrderByDescending(r => r.CreatedAt).First())
+                .ToListAsync();
+
+            // Tính trung bình theo MovieId
+            var result = latestRatings
+                .GroupBy(r => r.MovieId)
                 .Select(g => new FilmRatingDTO
                 {
-                    MovieId = g.Key.MovieId,
-                    Title = g.Key.Title,
+                    MovieId = g.Key,
+                    Title = "Unknown", // hoặc để null, tuỳ bạn
                     AverageRating = g.Average(r => r.Rating)
                 })
                 .OrderByDescending(dto => dto.AverageRating)
                 .Take(7)
-                .ToListAsync();
+                .ToList();
 
             return result;
         }
+
 
         public async Task<List<FilmReviewCountDTO>> GetFilmReviewCounts()
         {
