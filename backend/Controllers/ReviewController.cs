@@ -43,6 +43,19 @@ namespace backend.Controllers
             return Ok(new { message = "Get reviews by film ID successfully", data = reviews ?? [], status = 200 });
         }
 
+        // Endpoint phân trang cho reviews theo film (dùng cho trang chi tiết phim)
+        [HttpGet("film/{filmId}/pagination")]
+        public async Task<IActionResult> GetReviewsByFilmWithPagination(int filmId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+            {
+                return BadRequest(new { message = "Invalid pagination parameters.", status = 400 });
+            }
+
+            var paged = await _reviewRepository.GetReviewsByFilmWithPagination(filmId, pageNumber, pageSize);
+            return Ok(new { message = "Get reviews by film with pagination successfully", data = paged ?? new PaginatedResponse<backend.DTOs.ReviewAdminDTO> { Data = new List<backend.DTOs.ReviewAdminDTO>(), CurrentPage = pageNumber, TotalPages = 0 }, status = 200 });
+        }
+
         [HttpGet("account/{accountId}")]
         public async Task<IActionResult> GetReviewsByAccountId(int accountId)
         {

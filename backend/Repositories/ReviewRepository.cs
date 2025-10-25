@@ -94,6 +94,45 @@ namespace MovieReviewApp.backend.Repositories
             };
         }
 
+        // Lấy review (có comment) theo filmId theo dạng phân trang cho UI người dùng
+        public async Task<PaginatedResponse<ReviewAdminDTO>> GetReviewsByFilmWithPagination(int filmId, int pageNumber, int pageSize)
+        {
+            if (pageNumber <= 0) pageNumber = 1;
+            if (pageSize <= 0) pageSize = 10;
+
+            var baseQuery = _context.Set<Review>()
+                .Where(r => r.MovieId == filmId && !r.isDeleted && r.Comment != null);
+
+            var totalRecords = await baseQuery.CountAsync();
+
+            var data = await baseQuery
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => new ReviewAdminDTO
+                {
+                    Id = r.Id,
+                    MovieId = r.MovieId,
+                    MovieTitle = r.Film != null ? r.Film.Title : null,
+                    AccountId = r.AccountId,
+                    AccountName = r.Account != null ? r.Account.Username : null,
+                    Rating = r.Rating,
+                    Favorites = r.Favorites,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt,
+                    UpdatedAt = r.UpdatedAt,
+                    isDeleted = r.isDeleted
+                })
+                .ToListAsync();
+
+            return new PaginatedResponse<ReviewAdminDTO>
+            {
+                Data = data,
+                TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
+                CurrentPage = pageNumber
+            };
+        }
+
         public override async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);

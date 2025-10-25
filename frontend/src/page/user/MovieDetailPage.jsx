@@ -21,6 +21,9 @@ export default function MovieDetailPage() {
   const [loadingFavorite, setLoadingFavorite] = useState(true)
   const [comment, setComment] = useState("")
   const [reviews, setReviews] = useState([])
+  const [reviewsPage, setReviewsPage] = useState(1)
+  const [reviewsTotalPages, setReviewsTotalPages] = useState(1)
+  const [reviewsPageSize] = useState(5)
   const [showTrailer, setShowTrailer] = useState(false)
 
   // Tạm thời dùng ID cố định — sau này có thể lấy từ localStorage khi login
@@ -140,26 +143,26 @@ export default function MovieDetailPage() {
     }
   }
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (page = reviewsPage) => {
     try {
-      const res = await axios.get(`/Review/film/${id}`)
-      const reviewsData = res.data.data || []
+      const res = await axios.get(`/Review/film/${id}/pagination?pageNumber=${page}&pageSize=${reviewsPageSize}`)
+      const paged = res?.data?.data
+      const reviewsData = paged?.Data || []
 
-      const reviewsWithAccounts = await Promise.all(
-        reviewsData
-          .filter(r => r.comment && r.comment.trim())
-          .map(async review => {
-            try {
-              const accountRes = await axios.get(`/Account/${review.accountId}`)
-              const account = accountRes.data.data
-              return { ...review, accountName: account.userName || "Người dùng" }
-            } catch {
-              return { ...review, accountName: "Người dùng" }
-            }
-          })
-      )
+      // Map backend DTO fields to what the UI expects (accountName lower-case)
+      const reviewsMapped = reviewsData.map(r => ({
+        id: r.id,
+        accountId: r.accountId,
+        accountName: r.accountName || r.accountName || "Người dùng",
+        rating: r.rating,
+        favorites: r.favorites,
+        comment: r.comment,
+        createdAt: r.createdAt,
+      }))
 
-      setReviews(reviewsWithAccounts)
+      setReviews(reviewsMapped)
+      setReviewsTotalPages(paged?.TotalPages || 1)
+      setReviewsPage(paged?.CurrentPage || page)
     } catch (err) {
       console.error("❌ Lỗi tải bình luận:", err)
     }
@@ -218,7 +221,8 @@ export default function MovieDetailPage() {
       })
       Swal.fire("Thành công", "Bình luận của bạn đã được đăng", "success")
       setComment("")
-      fetchReviews()
+      // refresh first page after posting
+      fetchReviews(1)
     } catch (err) {
       console.error("❌ Lỗi bình luận:", err)
       Swal.fire("Lỗi", "Không thể đăng bình luận", "error")
@@ -459,6 +463,44 @@ export default function MovieDetailPage() {
                   ))
                 )}
               </div>
+
+              {/* Pagination controls */}
+              {reviewsTotalPages > 1 && (
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => fetchReviews(Math.max(1, reviewsPage - 1))}
+                    disabled={reviewsPage <= 1}
+                    className="px-3 py-1 bg-white/20 rounded"
+                  >
+                    Prev
+                  </button>
+
+                  {Array.from({ length: reviewsTotalPages }).map((_, idx) => {
+                    const page = idx + 1
+                    // show limited pages (window)
+                    const start = Math.max(1, reviewsPage - 2)
+                    const end = Math.min(reviewsTotalPages, start + 4)
+                    if (page < start || page > end) return null
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => fetchReviews(page)}
+                        className={`px-3 py-1 rounded ${page === reviewsPage ? 'bg-purple-600 text-white' : 'bg-white/20'}`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    onClick={() => fetchReviews(Math.min(reviewsTotalPages, reviewsPage + 1))}
+                    disabled={reviewsPage >= reviewsTotalPages}
+                    className="px-3 py-1 bg-white/20 rounded"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
