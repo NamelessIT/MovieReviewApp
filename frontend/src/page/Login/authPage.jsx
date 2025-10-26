@@ -40,8 +40,10 @@ export default function AuthPage() {
         localStorage.setItem("accountId", data.id)
         localStorage.setItem("username", data.username)
         localStorage.setItem("role", data.role)
-
-        navigate("/user/homepage")
+        if(data.role.toLowerCase() === "user") navigate("/user/homepage")
+        else if(data.role.toLowerCase() === "admin"){
+          navigate("/admin/homepage")
+        }
       } else {
         // ✅ 1. Tạo user trước
         const userRes = await axios.post("http://localhost:5003/api/user", {
@@ -49,8 +51,6 @@ export default function AuthPage() {
           email: formData.email,
         })
         const newUserId = userRes.data.id
-        console.log("New User ID:", newUserId)
-
         // ✅ 2. Tạo account liên kết user vừa tạo
         const accRes = await axios.post("http://localhost:5003/api/account", {
           username: formData.username,

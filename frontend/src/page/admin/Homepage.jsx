@@ -117,6 +117,7 @@ const Homepage = () => {
               <div className="card-body">
                 <h5 className="card-title fw-bold mb-4">Top Rated Films</h5>
                 <div className="list-group list-group-flush">
+                  {console.log(TopRatedFilmsData)}
                   {TopRatedFilmsData.map((film, index) => (
                     <div
                       key={index}
@@ -124,7 +125,7 @@ const Homepage = () => {
                     >
                       <div className="d-flex gap-3">
                         <span className="text-muted fw-medium" style={{ minWidth: "20px" }}>
-                          {index+1  }.
+                          {index + 1}.
                         </span>
                         <span>{film.title}</span>
                       </div>

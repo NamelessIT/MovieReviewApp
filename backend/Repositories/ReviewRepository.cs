@@ -272,26 +272,23 @@ namespace MovieReviewApp.backend.Repositories
         // ✅ 5. Tính điểm trung bình (chỉ lấy rating của review mới nhất mỗi AccountId)
         public async Task<List<FilmRatingDTO>> GetAverageRatings()
         {
-            // Lấy review mới nhất mỗi (AccountId, MovieId)
-            var latestRatings = await _context.Reviews
-                .Where(r => !r.isDeleted && r.Rating > 0)
-                .GroupBy(r => new { r.AccountId, r.MovieId })
-                .Select(g => g.OrderByDescending(r => r.CreatedAt).First())
-                .ToListAsync();
-
-            // Tính trung bình theo MovieId
-            var result = latestRatings
-                .GroupBy(r => r.MovieId)
+            // 1. LEFT JOIN: EF Core tự động xử lý JOIN khi sử dụng Navigation Property
+            // 2. GROUP BY: Nhóm theo MovieId và Title
+            var result = await _context.Set<Review>()
+                .GroupBy(r => new { r.MovieId, r.Film.Title })
                 .Select(g => new FilmRatingDTO
                 {
-                    MovieId = g.Key,
-                    Title = "Unknown", // hoặc để null, tuỳ bạn
+                    // 3. SELECT & AVG: Tính điểm trung bình và ánh xạ
+                    MovieId = g.Key.MovieId,
+                    Title = g.Key.Title,
                     AverageRating = g.Average(r => r.Rating)
                 })
+                // 4. ORDER BY: Sắp xếp theo điểm trung bình giảm dần (desc)
                 .OrderByDescending(dto => dto.AverageRating)
+                // lấy 7 bản ghi
                 .Take(7)
-                .ToList();
-
+                // 5. TO LIST: Thực thi truy vấn và trả về List
+                .ToListAsync();
             return result;
         }
 
