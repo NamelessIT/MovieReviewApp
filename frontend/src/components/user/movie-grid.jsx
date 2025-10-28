@@ -335,7 +335,7 @@ useEffect(() => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="flex items-center justify-center gap-2 mt-8 pagenation">
             <Button
               variant="outline"
               size="sm"
@@ -353,7 +353,7 @@ useEffect(() => {
                   variant={currentPage === page ? "default" : "outline"}
                   size="sm"
                   onClick={() => goToPage(page)}
-                  className={currentPage === page ? "bg-primary text-primary-foreground" : ""}
+                  className={currentPage === page ? "bg-primary text-primary-foreground active" : ""}
                 >
                   {page}
                 </Button>

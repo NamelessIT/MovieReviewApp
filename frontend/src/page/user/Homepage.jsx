@@ -27,7 +27,7 @@ export default function Home() {
         favoritesUpdated={favoritesUpdated}
         onFavoritesChange={handleFavoritesChange}
       />
-      <CelebritiesSection />
+      <CelebritiesSection numberSize={5}/>
       <MovieGrid 
         title="Newest" 
         showViewAll={true} 
