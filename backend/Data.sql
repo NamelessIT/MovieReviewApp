@@ -23,6 +23,62 @@ SET time_zone = "+00:00";
 --
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`Id`, `Email`, `FullName`, `CreatedAt`, `UpdatedAt`, `isDeleted`) VALUES
+(1, 'nguyen.vana@example.com', 'Nguyễn Văn An', '2020-01-15 10:00:00.000000', NULL, 0),
+(2, 'tran.thib@example.com', 'Trần Thị Bình', '2020-03-20 11:30:00.000000', '2023-11-01 15:45:00.000000', 0),
+(3, 'le.hcc@example.com', 'Lê Hữu Cảnh', '2021-06-01 08:00:00.000000', NULL, 0),
+(4, 'pham.thuyd@example.com', 'Phạm Thúy Duyên', '2021-11-10 14:20:00.000000', '2024-05-15 09:10:00.000000', 0),
+(5, 'hoang.mte@example.com', 'Hoàng Minh Tuấn Em', '2022-01-25 09:45:00.000000', NULL, 0),
+(6, 'david.lee@example.com', 'David Lee', '2022-04-12 16:00:00.000000', NULL, 0),
+(7, 'anna.kim@example.com', 'Anna Kim', '2022-08-05 17:30:00.000000', '2024-01-20 11:00:00.000000', 0),
+(8, 'ngov.f@example.com', 'Ngô Văn F', '2023-02-28 12:00:00.000000', NULL, 0),
+(9, 'dinh.gt@example.com', 'Đinh Giao Thúy', '2023-05-18 13:40:00.000000', NULL, 0),
+(10, 'john.smith@example.com', 'John Smith', '2023-07-07 14:50:00.000000', '2024-09-01 10:30:00.000000', 0),
+(11, 'user11@example.com', 'User Eleven', '2023-09-01 10:00:00.000000', NULL, 0),
+(12, 'user12@example.com', 'User Twelve', '2023-09-15 11:00:00.000000', NULL, 0),
+(13, 'user13@example.com', 'User Thirteen', '2023-10-01 12:00:00.000000', NULL, 0),
+(14, 'user14@example.com', 'User Fourteen', '2023-10-15 13:00:00.000000', NULL, 0),
+(15, 'user15@example.com', 'User Fifteen', '2023-11-01 14:00:00.000000', NULL, 0),
+(16, 'user16@example.com', 'User Sixteen', '2023-11-15 15:00:00.000000', NULL, 0),
+(17, 'user17@example.com', 'User Seventeen', '2023-12-01 16:00:00.000000', NULL, 0),
+(18, 'user18@example.com', 'User Eighteen', '2023-12-15 17:00:00.000000', NULL, 0),
+(19, 'user19@example.com', 'User Nineteen', '2024-01-01 18:00:00.000000', NULL, 0),
+(20, 'user20@example.com', 'User Twenty', '2024-01-15 19:00:00.000000', NULL, 0),
+(21, 'user21@example.com', 'User Twenty-One', '2024-02-01 20:00:00.000000', NULL, 0),
+(22, 'user22@example.com', 'User Twenty-Two', '2024-02-15 21:00:00.000000', NULL, 0),
+(23, 'user23@example.com', 'User Twenty-Three', '2024-03-01 22:00:00.000000', NULL, 0),
+(24, 'user24@example.com', 'User Twenty-Four', '2024-03-15 23:00:00.000000', NULL, 0),
+(25, 'user25@example.com', 'User Twenty-Five', '2024-04-01 08:00:00.000000', NULL, 0),
+(26, 'user26@example.com', 'User Twenty-Six', '2024-04-15 09:00:00.000000', NULL, 0),
+(27, 'user27@example.com', 'User Twenty-Seven', '2024-05-01 10:00:00.000000', NULL, 0),
+(28, 'user28@example.com', 'User Twenty-Eight', '2024-05-15 11:00:00.000000', NULL, 0),
+(29, 'user29@example.com', 'User Twenty-Nine', '2024-06-01 12:00:00.000000', NULL, 0),
+(30, 'user30@example.com', 'User Thirty', '2024-06-15 13:00:00.000000', NULL, 0),
+(31, 'user31@example.com', 'User Thirty-One', '2024-07-01 14:00:00.000000', NULL, 0),
+(32, 'user32@example.com', 'User Thirty-Two', '2024-07-15 15:00:00.000000', NULL, 0),
+(33, 'user33@example.com', 'User Thirty-Three', '2024-08-01 16:00:00.000000', NULL, 0),
+(34, 'user34@example.com', 'User Thirty-Four', '2024-08-15 17:00:00.000000', NULL, 0),
+(35, 'user35@example.com', 'User Thirty-Five', '2024-09-01 18:00:00.000000', NULL, 0),
+(36, 'user36@example.com', 'User Thirty-Six', '2024-09-15 19:00:00.000000', NULL, 0),
+(37, 'user37@example.com', 'User Thirty-Seven', '2024-10-01 20:00:00.000000', NULL, 0),
+(38, 'user38@example.com', 'User Thirty-Eight', '2024-10-15 21:00:00.000000', NULL, 0),
+(39, 'user39@example.com', 'User Thirty-Nine', '2024-11-01 22:00:00.000000', NULL, 0),
+(40, 'user40@example.com', 'User Forty', '2024-11-15 23:00:00.000000', NULL, 0),
+(41, 'user41@example.com', 'User Forty-One', '2024-12-01 08:00:00.000000', NULL, 0),
+(42, 'user42@example.com', 'User Forty-Two', '2025-01-01 09:00:00.000000', NULL, 0),
+(43, 'user43@example.com', 'User Forty-Three', '2025-01-15 10:00:00.000000', NULL, 0),
+(44, 'user44@example.com', 'User Forty-Four', '2025-02-01 11:00:00.000000', NULL, 0),
+(45, 'user45@example.com', 'User Forty-Five', '2025-02-15 12:00:00.000000', NULL, 0),
+(46, 'user46@example.com', 'User Forty-Six', '2025-03-01 13:00:00.000000', NULL, 0),
+(47, 'user47@example.com', 'User Forty-Seven', '2025-03-15 14:00:00.000000', NULL, 0),
+(48, 'user48@example.com', 'User Forty-Eight', '2025-04-01 15:00:00.000000', NULL, 0),
+(49, 'user49@example.com', 'User Forty-Nine', '2025-04-15 16:00:00.000000', NULL, 0),
+(50, 'deleted.user@example.com', 'Deleted User', '2020-01-01 08:00:00.000000', '2023-01-01 08:00:00.000000', 1);
+
+--
 -- Dumping data for table `account`
 --
 
@@ -99,6 +155,82 @@ INSERT INTO `directors` (`Id`, `Name`, `BirthDate`, `Bio`, `isDeleted`) VALUES
 (18, 'Agnès Varda', '1928-05-30 00:00:00.000000', 'Pioneering figure of the French New Wave. (Soft-deleted example)', 1),
 (19, 'Đỗ Thanh Hải', '1970-07-16 00:00:00.000000', 'Vietnamese TV and film director.', 0),
 (20, 'Martin Scorsese', '1942-11-17 00:00:00.000000', 'Master of crime and biographical films.', 0);
+
+
+--
+-- Dumping data for table `films`
+-- 
+
+INSERT INTO `films` (`Id`, `Title`, `ReleaseDate`, `DirectorId`, `Synopsis`, `PosterUrl`, `TrailerUrl`, `CreatedAt`, `UpdatedAt`, `isDeleted`) VALUES
+(1, 'Inception', '2010-07-16 00:00:00.000000', 1, 'A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761321396/film-posters/utmjypy7qhinywyvfifd.webp', 'https://youtu.be/8hP9D6kZseM', '2015-01-01 09:00:00.000000', '2025-10-25 07:39:52.638853', 0),
+(2, 'Barbie', '2023-07-21 00:00:00.000000', 2, 'Barbie suffers a crisis that leads her to question her world and her existence.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375337/film-posters/bokepjrahc403hwoi537.jpg', 'https://youtu.be/pBk4NYhWNMM', '2023-08-01 10:00:00.000000', '2025-10-25 07:15:59.141632', 0),
+(3, 'Pulp Fiction', '1994-10-14 00:00:00.000000', 3, 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375354/film-posters/cxxpemjlk1qkcard4guh.jpg', 'https://youtu.be/s7EdQ4FqbhY', '2015-05-20 12:00:00.000000', '2025-10-25 07:43:12.711397', 0),
+(4, 'Lật Mặt 7: Một Điều Ước', '2024-04-26 00:00:00.000000', 4, 'A heartwarming story about family bonds and a mother\'s unwavering love.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375366/film-posters/vdmuto0sq4cdsxuvixij.jpg', 'https://youtu.be/d1ZHdosjNX8', '2024-03-01 11:30:00.000000', '2025-10-25 07:43:37.393916', 0),
+(5, 'Oldboy', '2003-11-21 00:00:00.000000', 5, 'After being kidnapped and imprisoned for fifteen years, Oh Dae-Su is released, only to find that he must find his captor in five days.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375440/film-posters/kqatz79eklp9eeofpvgc.jpg', 'https://youtu.be/2HkjrJ6IK5E', '2016-10-10 14:00:00.000000', '2025-10-25 07:44:00.106003', 0),
+(6, 'Dune: Part Two', '2024-03-01 00:00:00.000000', 6, 'Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375553/film-posters/dl9bzjkigcvwcsspsdhu.jpg', 'https://youtu.be/Way9Dexny3w', '2024-02-10 15:00:00.000000', '2025-10-25 07:44:28.517059', 0),
+(7, 'The Piano', '1993-11-11 00:00:00.000000', 7, 'A mute woman is sent to New Zealand along with her daughter and her beloved piano for an arranged marriage.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375487/film-posters/hwgt3d324dszkwdehfwf.jpg', 'https://youtu.be/cyTn4XIYH8M', '2017-03-05 16:00:00.000000', '2025-10-25 07:44:52.538741', 0),
+(8, 'Parasite', '2019-05-30 00:00:00.000000', 8, 'Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375499/film-posters/uaubqgjdkk0jh2kxs9kp.jpg', 'https://youtu.be/5xH0HfJHsaY', '2019-06-01 17:00:00.000000', '2025-10-25 07:45:16.277110', 0),
+(9, 'Spirited Away', '2001-07-20 00:00:00.000000', 9, 'During her family\'s move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375513/film-posters/dtgayetf9qrem2d3rcs2.jpg', 'https://youtu.be/ByXuk9QqQkk', '2018-09-01 18:00:00.000000', '2025-10-25 07:45:35.365717', 0),
+(10, 'Lost in Translation', '2003-09-12 00:00:00.000000', 10, 'A faded movie star and a young woman strike up an unlikely friendship in Tokyo.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375532/film-posters/yxnnyaumttsl1mcjiz5d.jpg', 'https://youtu.be/W6iVPCRflQM', '2016-01-20 19:00:00.000000', '2025-10-25 07:46:05.003451', 0),
+(11, 'Blade Runner 2049', '2017-10-06 00:00:00.000000', 6, 'Young Blade Runner K\'s discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who\'s been missing for thirty years.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375653/film-posters/phtswhvgbf7s5tvn24te.webp', 'https://youtu.be/gCcx85zbxz4', '2017-01-01 08:00:00.000000', '2025-10-25 07:46:24.367688', 0),
+(12, 'Oppenheimer', '2023-07-21 00:00:00.000000', 1, 'The story of J. Robert Oppenheimer, the father of the atomic bomb.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375791/film-posters/figr6hrcp0n0f91dngfx.webp', 'https://youtu.be/uYPbbksJxIg', '2023-01-01 09:30:00.000000', '2025-10-25 07:46:51.076121', 0),
+(13, 'The Grand Budapest Hotel', '2014-03-07 00:00:00.000000', 12, 'The adventures of Gustave H, a legendary concierge at a famous European hotel between the wars, and Zero Moustafa, the lobby boy who becomes his most trusted friend.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375808/film-posters/u82xsbudv9b3elnunsav.webp', 'https://youtu.be/1Fg5iWmQjwk', '2014-04-01 10:00:00.000000', '2025-10-25 07:47:16.572210', 0),
+(14, 'Nomadland', '2020-09-04 00:00:00.000000', 13, 'After losing everything in the Great Recession, a woman embarks on a journey through the American West, living as a van-dwelling modern-day nomad.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375922/film-posters/vd6slyrmnclqkdjnsjo2.webp', 'https://youtu.be/6sxCFZ8_d84', '2021-01-01 11:00:00.000000', '2025-10-25 07:47:39.038414', 0),
+(15, 'Get Out', '2017-02-24 00:00:00.000000', 14, 'A young Black man visits his white girlfriend\'s parents for the weekend, but soon discovers something sinister lurking beneath their polite facade.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375935/film-posters/pahtbjfxyp7lpye2qmja.webp', 'https://youtu.be/DzfpyUB60YY', '2017-03-01 12:00:00.000000', '2025-10-25 07:48:08.126768', 0),
+(16, 'Jurassic Park', '1993-06-11 00:00:00.000000', 15, 'A pragmatic paleontologist visits an almost complete theme park of cloned dinosaurs.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375992/film-posters/g9touk20viqu56x7gpoj.webp', 'https://youtu.be/jan5CFWs9ic', '2015-02-01 13:00:00.000000', '2025-10-25 07:48:27.605134', 0),
+(17, 'Portrait of a Lady on Fire', '2019-09-18 00:00:00.000000', 16, 'In 1770 France, a painter is commissioned to paint a wedding portrait of a young woman without her knowing.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376099/film-posters/qsue8ekybe3wl5tnt3wf.webp', 'https://youtu.be/R-fQPTwma9o', '2020-01-01 14:00:00.000000', '2025-10-25 07:48:50.045962', 0),
+(18, 'The Flu', '2013-08-14 00:00:00.000000', 17, 'A deadly strain of the H5N1 bird flu virus emerges in a suburb of Seoul.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376482/film-posters/en8jqyb2iee5mcpnvmnx.webp', 'https://youtu.be/T7Rrz318X80', '2016-05-01 15:00:00.000000', '2025-10-25 07:49:20.013120', 0),
+(19, 'The Irishman', '2019-11-27 00:00:00.000000', 20, 'A mob hitman recalls his possible involvement with the disappearance of union boss Jimmy Hoffa.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376718/film-posters/t615gp3dopbpdg51lytf.webp', 'https://youtu.be/WHXxVmeGQUc', '2019-08-01 16:00:00.000000', '2025-10-25 07:49:42.135509', 0),
+(20, 'The Martian', '2015-10-02 00:00:00.000000', 11, 'An astronaut is presumed dead after a fierce storm and is left behind by his crew during a mission to Mars.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376756/film-posters/ygwkmp33drzb39ygwz4q.webp', 'https://youtu.be/ej3ioOneTy8', '2015-09-01 17:00:00.000000', '2025-10-25 07:50:06.244250', 0),
+(21, 'Tenet', '2020-08-26 00:00:00.000000', 1, 'Armed with only one word, Tenet, and fighting for the survival of the entire world, a Protagonist journeys through a twilight world of international espionage on a mission that will unfold in something beyond real time.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377374/film-posters/v6p5avdtwousuebkw6ao.webp', 'https://youtu.be/L3pk_TBkihU', '2020-05-01 18:00:00.000000', '2025-10-25 07:50:35.426967', 0),
+(22, 'Little Women', '2019-12-25 00:00:00.000000', 2, 'Jo March reflects back and forth on her life, telling the beloved story of the March sisters.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377391/film-posters/wxfkvn1daquuvgubwkat.webp', 'https://youtu.be/AST2-4db4ic', '2019-11-01 19:00:00.000000', '2025-10-25 07:50:58.182448', 0),
+(23, 'Once Upon a Time in Hollywood', '2019-07-26 00:00:00.000000', 3, 'A faded TV actor and his stunt double strive to achieve fame and success in the film industry during the final years of Hollywood\'s Golden Age in 1969 Los Angeles.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377410/film-posters/eb5xjtirq6ywkmjqmrzi.webp', 'https://youtu.be/ELeMaP8EPAA', '2019-05-01 20:00:00.000000', '2025-10-25 07:51:18.085640', 0),
+(24, 'Hai Phượng (Furie)', '2019-02-22 00:00:00.000000', 19, 'A retired gangster is forced to return to her violent ways when her daughter is kidnapped.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377455/film-posters/gqamhh6py90ednncdgnx.webp', 'https://youtu.be/6zQe-K8Ywq4', '2019-01-01 21:00:00.000000', '2025-10-25 07:51:38.851504', 0),
+(25, 'The Handmaiden', '2016-06-01 00:00:00.000000', 5, 'A Japanese heiress falls for a con artist posing as her handmaiden.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377469/film-posters/dvxl2lhdh6qmdqynjoof.webp', 'https://youtu.be/6sVYumzrKvs', '2016-04-01 22:00:00.000000', '2025-10-25 07:51:59.782425', 0),
+(26, 'Arrival', '2016-11-11 00:00:00.000000', 6, 'A linguist is recruited by the military to communicate with alien lifeforms.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377482/film-posters/xrsxmmzqrssshbvpw7ss.webp', 'https://youtu.be/tFMo3UJ4B4g', '2016-09-01 23:00:00.000000', '2025-10-25 07:52:23.053010', 0),
+(27, 'The Power of the Dog', '2021-12-01 00:00:00.000000', 7, 'A wealthy but intimidating rancher inspires fear and awe in those around him.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377501/film-posters/m2t7rqjqcoagjzcge1jj.webp', 'https://youtu.be/LRDPo0CHrko', '2021-10-01 08:00:00.000000', '2025-10-25 07:52:45.142102', 0),
+(28, 'Memories of Murder', '2003-05-02 00:00:00.000000', 8, 'In a small South Korean province, two detectives struggle with the case of multiple young women being raped and murdered by an unknown culprit.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377513/film-posters/emfpu1hoskbd0trbwd7k.webp', 'https://youtu.be/0n_HQwQU8ls', '2016-02-01 09:00:00.000000', '2025-10-25 07:53:07.267787', 0),
+(29, 'Princess Mononoke', '1997-07-12 00:00:00.000000', 9, 'A prince becomes involved in a conflict between forest spirits and the humans.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377529/film-posters/cxpcxjfy0i2qngs3mc0z.webp', 'https://youtu.be/4OiMOHRDs14', '2017-05-01 10:00:00.000000', '2025-10-25 07:53:33.694427', 0),
+(30, 'Marie Antoinette', '2006-10-20 00:00:00.000000', 10, 'A look at the life of the ill-fated Archduchess of Austria and Queen of France.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377541/film-posters/oukhyqtuhdkbqb32v5vl.webp', 'https://youtu.be/yBWyKRoh98U', '2015-07-01 11:00:00.000000', '2025-10-25 07:53:58.663636', 0),
+(31, 'Alien', '1979-05-25 00:00:00.000000', 11, 'The crew of a commercial space tug encounter a deadly alien lifeform.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377556/film-posters/fxqc27czko4wd3eqlglf.webp', 'https://youtu.be/jQ5lPt9edzQ', '2015-03-01 12:00:00.000000', '2025-10-25 07:54:37.278322', 0),
+(32, 'Isle of Dogs', '2018-03-23 00:00:00.000000', 12, 'A boy embarks on an odyssey in search of his lost dog.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377573/film-posters/nizblv2pbt62jmv7blwu.webp', 'https://youtu.be/dt__kig8PVU', '2018-01-01 13:00:00.000000', '2025-10-25 07:55:05.231195', 0),
+(33, 'Eternals', '2021-11-05 00:00:00.000000', 13, 'The Eternals, a race of immortal beings with superhuman powers who have secretly lived on Earth for thousands of years, reunite to fight the Deviants.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377587/film-posters/pmo2xhghp4uqxrjqkqpk.webp', 'https://youtu.be/x_me3xsvDgk', '2021-09-01 14:00:00.000000', '2025-10-25 07:55:37.941725', 0),
+(34, 'Nope', '2022-07-22 00:00:00.000000', 14, 'Residents of a secluded gulch in California witness a mysterious and abnormal event.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377602/film-posters/ikxnr2orpjb3lefeknmm.webp', 'https://youtu.be/In8fuzj3gck', '2022-05-01 15:00:00.000000', '2025-10-25 07:56:00.830168', 0),
+(35, 'Schindler\'s List', '1993-12-15 00:00:00.000000', 15, 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377613/film-posters/dxdl6jxuj1p6zdbgkby5.webp', 'https://youtu.be/mxphAlJID9U', '2015-04-01 16:00:00.000000', '2025-10-25 07:56:23.629656', 0),
+(36, 'Titanic', '1997-12-19 00:00:00.000000', 7, 'A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the ill-fated RMS Titanic.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377633/film-posters/jnqqyqebs8u1schyslkl.webp', 'https://youtu.be/kVrqfYjkTdQ', '2015-06-01 17:00:00.000000', '2025-10-25 07:56:57.539998', 0),
+(37, 'Joker', '2019-10-04 00:00:00.000000', 3, 'A mentally troubled comedian embarks on a downward spiral into madness and crime.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377652/film-posters/ngqvmo6qpoc9uyua1bnl.webp', 'https://youtu.be/zAGVQLHvwOY', '2019-07-01 18:00:00.000000', '2025-10-25 07:57:25.738594', 0),
+(38, 'Gone Girl', '2014-10-03 00:00:00.000000', 2, 'When a woman disappears on her fifth wedding anniversary, her husband becomes the prime suspect.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377674/film-posters/bjxek2hmx8nvrh3cnhum.webp', 'https://youtu.be/2-_-1nJf8Vg', '2015-08-01 19:00:00.000000', '2025-10-25 07:57:48.996123', 0),
+(39, 'No Country for Old Men', '2007-11-09 00:00:00.000000', 15, 'Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377696/film-posters/tis12zh8pzetiiy4559c.webp', 'https://youtu.be/38A__WT3-o0', '2015-11-01 20:00:00.000000', '2025-10-25 07:58:19.791809', 0),
+(40, 'The Lord of the Rings: The Fellowship of the Ring', '2001-12-19 00:00:00.000000', 7, 'A young hobbit inherits a powerful ring and embarks on a quest to destroy it.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377713/film-posters/tzxjqwd3gqmwua8wv42s.webp', 'https://youtu.be/V75dMMIW2B4', '2015-12-01 21:00:00.000000', '2025-10-25 07:59:11.941634', 0),
+(41, 'Interstellar', '2014-11-07 00:00:00.000000', 1, 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377733/film-posters/px0pyptz9ywcpmnyqgjy.webp', 'https://youtu.be/zSWdZVtXT7E', '2014-10-01 22:00:00.000000', '2025-10-25 07:59:35.535778', 0),
+(42, 'Mad Max: Fury Road', '2015-05-15 00:00:00.000000', 6, 'In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler to save a group of female prisoners.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377759/film-posters/itdqi4r0mzvnymxgyitt.webp', 'https://youtu.be/hEJnMQG9ev8', '2015-05-01 23:00:00.000000', '2025-10-25 08:00:00.003542', 0),
+(43, 'Knives Out', '2019-11-27 00:00:00.000000', 7, 'A detective investigates the death of a wealthy crime novelist.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377778/film-posters/x2qj6u38xk3dljv6zbij.webp', 'https://youtu.be/qGqiHJTsRkQ', '2019-10-01 08:00:00.000000', '2025-10-25 08:00:22.290558', 0),
+(44, 'The Shape of Water', '2017-12-01 00:00:00.000000', 7, 'A mute cleaning lady forms an unlikely relationship with an aquatic creature.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377804/film-posters/qdkkifr4pdxayqhumelx.webp', 'https://youtu.be/XFYWazblaUA', '2017-11-01 09:00:00.000000', '2025-10-25 08:00:39.834401', 0),
+(45, 'Jaws', '1975-06-20 00:00:00.000000', 15, 'A police chief, a marine scientist, and a grizzled shark hunter try to kill a massive great white shark.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377819/film-posters/kfp8ibbigpqq3hztsjn3.webp', 'https://youtu.be/U1fu_sA7XhE', '2015-02-10 10:00:00.000000', '2025-10-25 08:00:57.708120', 0),
+(46, 'Minari', '2020-02-26 00:00:00.000000', 10, 'A Korean-American family moves to an Arkansas farm in search of their own American Dream.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377836/film-posters/bixn5girbzejizo5afdb.webp', 'https://youtu.be/KQ0gFidlro8', '2020-01-01 11:00:00.000000', '2025-10-25 08:01:16.228127', 0),
+(47, 'The Babadook', '2014-05-22 00:00:00.000000', 12, 'A single mother must confront a monster from a children\'s book.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377853/film-posters/vydtl13xsbew1hhcegr8.webp', 'https://youtu.be/k5WQZzDRVtw', '2015-03-20 12:00:00.000000', '2025-10-25 08:01:36.533476', 0),
+(48, 'Finding Nemo', '2003-05-30 00:00:00.000000', 14, 'After his son is captured, a timid clownfish embarks on a journey to bring him home.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377867/film-posters/tqaje8eldefjlsqo4edz.webp', 'https://youtu.be/9oQ628Seb9w', '2016-03-01 13:00:00.000000', '2025-10-25 08:02:01.908159', 0),
+(49, 'V For Vendetta', '2006-03-17 00:00:00.000000', 10, 'In a totalitarian future society, a freedom fighter known only as V uses terrorist tactics to fight against his oppressors.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377885/film-posters/pljbbtboqi8liwzfqkig.webp', 'https://youtu.be/lSA7mAHolAw', '2015-01-10 14:00:00.000000', '2025-10-25 08:02:21.375056', 0),
+(50, 'Soft Deleted Film', '2018-01-01 00:00:00.000000', 1, 'This is a film that has been soft-deleted.', 'http://dummy.com/poster/deleted.jpg', 'http://dummy.com/trailer/deleted.mp4', '2018-01-01 08:00:00.000000', '2023-01-01 08:00:00.000000', 1);
+
+
+--
+-- Dumping data for table `genres`
+--
+
+INSERT INTO `genres` (`Id`, `Name`, `isDeleted`) VALUES
+(1, 'Action', 0),
+(2, 'Drama', 0),
+(3, 'Comedy', 0),
+(4, 'Romance', 0),
+(5, 'Sci-Fi', 0),
+(6, 'Thriller', 0),
+(7, 'Documentary', 0),
+(8, 'Animation', 0),
+(9, 'Horror', 0),
+(10, 'Crime', 0),
+(11, 'Fantasy', 0),
+(12, 'Biography', 0);
 
 --
 -- Dumping data for table `filmactors`
@@ -481,79 +613,8 @@ INSERT INTO `filmgenres` (`FilmId`, `GenreId`) VALUES
 (50, 2),
 (50, 6);
 
---
--- Dumping data for table `films`
---
 
-INSERT INTO `films` (`Id`, `Title`, `ReleaseDate`, `DirectorId`, `Synopsis`, `PosterUrl`, `TrailerUrl`, `CreatedAt`, `UpdatedAt`, `isDeleted`) VALUES
-(1, 'Inception', '2010-07-16 00:00:00.000000', 1, 'A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761321396/film-posters/utmjypy7qhinywyvfifd.webp', 'https://youtu.be/8hP9D6kZseM', '2015-01-01 09:00:00.000000', '2025-10-25 07:39:52.638853', 0),
-(2, 'Barbie', '2023-07-21 00:00:00.000000', 2, 'Barbie suffers a crisis that leads her to question her world and her existence.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375337/film-posters/bokepjrahc403hwoi537.jpg', 'https://youtu.be/pBk4NYhWNMM', '2023-08-01 10:00:00.000000', '2025-10-25 07:15:59.141632', 0),
-(3, 'Pulp Fiction', '1994-10-14 00:00:00.000000', 3, 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375354/film-posters/cxxpemjlk1qkcard4guh.jpg', 'https://youtu.be/s7EdQ4FqbhY', '2015-05-20 12:00:00.000000', '2025-10-25 07:43:12.711397', 0),
-(4, 'Lật Mặt 7: Một Điều Ước', '2024-04-26 00:00:00.000000', 4, 'A heartwarming story about family bonds and a mother\'s unwavering love.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375366/film-posters/vdmuto0sq4cdsxuvixij.jpg', 'https://youtu.be/d1ZHdosjNX8', '2024-03-01 11:30:00.000000', '2025-10-25 07:43:37.393916', 0),
-(5, 'Oldboy', '2003-11-21 00:00:00.000000', 5, 'After being kidnapped and imprisoned for fifteen years, Oh Dae-Su is released, only to find that he must find his captor in five days.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375440/film-posters/kqatz79eklp9eeofpvgc.jpg', 'https://youtu.be/2HkjrJ6IK5E', '2016-10-10 14:00:00.000000', '2025-10-25 07:44:00.106003', 0),
-(6, 'Dune: Part Two', '2024-03-01 00:00:00.000000', 6, 'Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375553/film-posters/dl9bzjkigcvwcsspsdhu.jpg', 'https://youtu.be/Way9Dexny3w', '2024-02-10 15:00:00.000000', '2025-10-25 07:44:28.517059', 0),
-(7, 'The Piano', '1993-11-11 00:00:00.000000', 7, 'A mute woman is sent to New Zealand along with her daughter and her beloved piano for an arranged marriage.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375487/film-posters/hwgt3d324dszkwdehfwf.jpg', 'https://youtu.be/cyTn4XIYH8M', '2017-03-05 16:00:00.000000', '2025-10-25 07:44:52.538741', 0),
-(8, 'Parasite', '2019-05-30 00:00:00.000000', 8, 'Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375499/film-posters/uaubqgjdkk0jh2kxs9kp.jpg', 'https://youtu.be/5xH0HfJHsaY', '2019-06-01 17:00:00.000000', '2025-10-25 07:45:16.277110', 0),
-(9, 'Spirited Away', '2001-07-20 00:00:00.000000', 9, 'During her family\'s move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375513/film-posters/dtgayetf9qrem2d3rcs2.jpg', 'https://youtu.be/ByXuk9QqQkk', '2018-09-01 18:00:00.000000', '2025-10-25 07:45:35.365717', 0),
-(10, 'Lost in Translation', '2003-09-12 00:00:00.000000', 10, 'A faded movie star and a young woman strike up an unlikely friendship in Tokyo.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375532/film-posters/yxnnyaumttsl1mcjiz5d.jpg', 'https://youtu.be/W6iVPCRflQM', '2016-01-20 19:00:00.000000', '2025-10-25 07:46:05.003451', 0),
-(11, 'Blade Runner 2049', '2017-10-06 00:00:00.000000', 6, 'Young Blade Runner K\'s discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who\'s been missing for thirty years.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375653/film-posters/phtswhvgbf7s5tvn24te.webp', 'https://youtu.be/gCcx85zbxz4', '2017-01-01 08:00:00.000000', '2025-10-25 07:46:24.367688', 0),
-(12, 'Oppenheimer', '2023-07-21 00:00:00.000000', 1, 'The story of J. Robert Oppenheimer, the father of the atomic bomb.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375791/film-posters/figr6hrcp0n0f91dngfx.webp', 'https://youtu.be/uYPbbksJxIg', '2023-01-01 09:30:00.000000', '2025-10-25 07:46:51.076121', 0),
-(13, 'The Grand Budapest Hotel', '2014-03-07 00:00:00.000000', 12, 'The adventures of Gustave H, a legendary concierge at a famous European hotel between the wars, and Zero Moustafa, the lobby boy who becomes his most trusted friend.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375808/film-posters/u82xsbudv9b3elnunsav.webp', 'https://youtu.be/1Fg5iWmQjwk', '2014-04-01 10:00:00.000000', '2025-10-25 07:47:16.572210', 0),
-(14, 'Nomadland', '2020-09-04 00:00:00.000000', 13, 'After losing everything in the Great Recession, a woman embarks on a journey through the American West, living as a van-dwelling modern-day nomad.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375922/film-posters/vd6slyrmnclqkdjnsjo2.webp', 'https://youtu.be/6sxCFZ8_d84', '2021-01-01 11:00:00.000000', '2025-10-25 07:47:39.038414', 0),
-(15, 'Get Out', '2017-02-24 00:00:00.000000', 14, 'A young Black man visits his white girlfriend\'s parents for the weekend, but soon discovers something sinister lurking beneath their polite facade.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375935/film-posters/pahtbjfxyp7lpye2qmja.webp', 'https://youtu.be/DzfpyUB60YY', '2017-03-01 12:00:00.000000', '2025-10-25 07:48:08.126768', 0),
-(16, 'Jurassic Park', '1993-06-11 00:00:00.000000', 15, 'A pragmatic paleontologist visits an almost complete theme park of cloned dinosaurs.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761375992/film-posters/g9touk20viqu56x7gpoj.webp', 'https://youtu.be/jan5CFWs9ic', '2015-02-01 13:00:00.000000', '2025-10-25 07:48:27.605134', 0),
-(17, 'Portrait of a Lady on Fire', '2019-09-18 00:00:00.000000', 16, 'In 1770 France, a painter is commissioned to paint a wedding portrait of a young woman without her knowing.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376099/film-posters/qsue8ekybe3wl5tnt3wf.webp', 'https://youtu.be/R-fQPTwma9o', '2020-01-01 14:00:00.000000', '2025-10-25 07:48:50.045962', 0),
-(18, 'The Flu', '2013-08-14 00:00:00.000000', 17, 'A deadly strain of the H5N1 bird flu virus emerges in a suburb of Seoul.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376482/film-posters/en8jqyb2iee5mcpnvmnx.webp', 'https://youtu.be/T7Rrz318X80', '2016-05-01 15:00:00.000000', '2025-10-25 07:49:20.013120', 0),
-(19, 'The Irishman', '2019-11-27 00:00:00.000000', 20, 'A mob hitman recalls his possible involvement with the disappearance of union boss Jimmy Hoffa.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376718/film-posters/t615gp3dopbpdg51lytf.webp', 'https://youtu.be/WHXxVmeGQUc', '2019-08-01 16:00:00.000000', '2025-10-25 07:49:42.135509', 0),
-(20, 'The Martian', '2015-10-02 00:00:00.000000', 11, 'An astronaut is presumed dead after a fierce storm and is left behind by his crew during a mission to Mars.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761376756/film-posters/ygwkmp33drzb39ygwz4q.webp', 'https://youtu.be/ej3ioOneTy8', '2015-09-01 17:00:00.000000', '2025-10-25 07:50:06.244250', 0),
-(21, 'Tenet', '2020-08-26 00:00:00.000000', 1, 'Armed with only one word, Tenet, and fighting for the survival of the entire world, a Protagonist journeys through a twilight world of international espionage on a mission that will unfold in something beyond real time.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377374/film-posters/v6p5avdtwousuebkw6ao.webp', 'https://youtu.be/L3pk_TBkihU', '2020-05-01 18:00:00.000000', '2025-10-25 07:50:35.426967', 0),
-(22, 'Little Women', '2019-12-25 00:00:00.000000', 2, 'Jo March reflects back and forth on her life, telling the beloved story of the March sisters.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377391/film-posters/wxfkvn1daquuvgubwkat.webp', 'https://youtu.be/AST2-4db4ic', '2019-11-01 19:00:00.000000', '2025-10-25 07:50:58.182448', 0),
-(23, 'Once Upon a Time in Hollywood', '2019-07-26 00:00:00.000000', 3, 'A faded TV actor and his stunt double strive to achieve fame and success in the film industry during the final years of Hollywood\'s Golden Age in 1969 Los Angeles.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377410/film-posters/eb5xjtirq6ywkmjqmrzi.webp', 'https://youtu.be/ELeMaP8EPAA', '2019-05-01 20:00:00.000000', '2025-10-25 07:51:18.085640', 0),
-(24, 'Hai Phượng (Furie)', '2019-02-22 00:00:00.000000', 19, 'A retired gangster is forced to return to her violent ways when her daughter is kidnapped.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377455/film-posters/gqamhh6py90ednncdgnx.webp', 'https://youtu.be/6zQe-K8Ywq4', '2019-01-01 21:00:00.000000', '2025-10-25 07:51:38.851504', 0),
-(25, 'The Handmaiden', '2016-06-01 00:00:00.000000', 5, 'A Japanese heiress falls for a con artist posing as her handmaiden.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377469/film-posters/dvxl2lhdh6qmdqynjoof.webp', 'https://youtu.be/6sVYumzrKvs', '2016-04-01 22:00:00.000000', '2025-10-25 07:51:59.782425', 0),
-(26, 'Arrival', '2016-11-11 00:00:00.000000', 6, 'A linguist is recruited by the military to communicate with alien lifeforms.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377482/film-posters/xrsxmmzqrssshbvpw7ss.webp', 'https://youtu.be/tFMo3UJ4B4g', '2016-09-01 23:00:00.000000', '2025-10-25 07:52:23.053010', 0),
-(27, 'The Power of the Dog', '2021-12-01 00:00:00.000000', 7, 'A wealthy but intimidating rancher inspires fear and awe in those around him.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377501/film-posters/m2t7rqjqcoagjzcge1jj.webp', 'https://youtu.be/LRDPo0CHrko', '2021-10-01 08:00:00.000000', '2025-10-25 07:52:45.142102', 0),
-(28, 'Memories of Murder', '2003-05-02 00:00:00.000000', 8, 'In a small South Korean province, two detectives struggle with the case of multiple young women being raped and murdered by an unknown culprit.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377513/film-posters/emfpu1hoskbd0trbwd7k.webp', 'https://youtu.be/0n_HQwQU8ls', '2016-02-01 09:00:00.000000', '2025-10-25 07:53:07.267787', 0),
-(29, 'Princess Mononoke', '1997-07-12 00:00:00.000000', 9, 'A prince becomes involved in a conflict between forest spirits and the humans.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377529/film-posters/cxpcxjfy0i2qngs3mc0z.webp', 'https://youtu.be/4OiMOHRDs14', '2017-05-01 10:00:00.000000', '2025-10-25 07:53:33.694427', 0),
-(30, 'Marie Antoinette', '2006-10-20 00:00:00.000000', 10, 'A look at the life of the ill-fated Archduchess of Austria and Queen of France.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377541/film-posters/oukhyqtuhdkbqb32v5vl.webp', 'https://youtu.be/yBWyKRoh98U', '2015-07-01 11:00:00.000000', '2025-10-25 07:53:58.663636', 0),
-(31, 'Alien', '1979-05-25 00:00:00.000000', 11, 'The crew of a commercial space tug encounter a deadly alien lifeform.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377556/film-posters/fxqc27czko4wd3eqlglf.webp', 'https://youtu.be/jQ5lPt9edzQ', '2015-03-01 12:00:00.000000', '2025-10-25 07:54:37.278322', 0),
-(32, 'Isle of Dogs', '2018-03-23 00:00:00.000000', 12, 'A boy embarks on an odyssey in search of his lost dog.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377573/film-posters/nizblv2pbt62jmv7blwu.webp', 'https://youtu.be/dt__kig8PVU', '2018-01-01 13:00:00.000000', '2025-10-25 07:55:05.231195', 0),
-(33, 'Eternals', '2021-11-05 00:00:00.000000', 13, 'The Eternals, a race of immortal beings with superhuman powers who have secretly lived on Earth for thousands of years, reunite to fight the Deviants.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377587/film-posters/pmo2xhghp4uqxrjqkqpk.webp', 'https://youtu.be/x_me3xsvDgk', '2021-09-01 14:00:00.000000', '2025-10-25 07:55:37.941725', 0),
-(34, 'Nope', '2022-07-22 00:00:00.000000', 14, 'Residents of a secluded gulch in California witness a mysterious and abnormal event.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377602/film-posters/ikxnr2orpjb3lefeknmm.webp', 'https://youtu.be/In8fuzj3gck', '2022-05-01 15:00:00.000000', '2025-10-25 07:56:00.830168', 0),
-(35, 'Schindler\'s List', '1993-12-15 00:00:00.000000', 15, 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377613/film-posters/dxdl6jxuj1p6zdbgkby5.webp', 'https://youtu.be/mxphAlJID9U', '2015-04-01 16:00:00.000000', '2025-10-25 07:56:23.629656', 0),
-(36, 'Titanic', '1997-12-19 00:00:00.000000', 7, 'A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the ill-fated RMS Titanic.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377633/film-posters/jnqqyqebs8u1schyslkl.webp', 'https://youtu.be/kVrqfYjkTdQ', '2015-06-01 17:00:00.000000', '2025-10-25 07:56:57.539998', 0),
-(37, 'Joker', '2019-10-04 00:00:00.000000', 3, 'A mentally troubled comedian embarks on a downward spiral into madness and crime.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377652/film-posters/ngqvmo6qpoc9uyua1bnl.webp', 'https://youtu.be/zAGVQLHvwOY', '2019-07-01 18:00:00.000000', '2025-10-25 07:57:25.738594', 0),
-(38, 'Gone Girl', '2014-10-03 00:00:00.000000', 2, 'When a woman disappears on her fifth wedding anniversary, her husband becomes the prime suspect.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377674/film-posters/bjxek2hmx8nvrh3cnhum.webp', 'https://youtu.be/2-_-1nJf8Vg', '2015-08-01 19:00:00.000000', '2025-10-25 07:57:48.996123', 0),
-(39, 'No Country for Old Men', '2007-11-09 00:00:00.000000', 15, 'Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377696/film-posters/tis12zh8pzetiiy4559c.webp', 'https://youtu.be/38A__WT3-o0', '2015-11-01 20:00:00.000000', '2025-10-25 07:58:19.791809', 0),
-(40, 'The Lord of the Rings: The Fellowship of the Ring', '2001-12-19 00:00:00.000000', 7, 'A young hobbit inherits a powerful ring and embarks on a quest to destroy it.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377713/film-posters/tzxjqwd3gqmwua8wv42s.webp', 'https://youtu.be/V75dMMIW2B4', '2015-12-01 21:00:00.000000', '2025-10-25 07:59:11.941634', 0),
-(41, 'Interstellar', '2014-11-07 00:00:00.000000', 1, 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377733/film-posters/px0pyptz9ywcpmnyqgjy.webp', 'https://youtu.be/zSWdZVtXT7E', '2014-10-01 22:00:00.000000', '2025-10-25 07:59:35.535778', 0),
-(42, 'Mad Max: Fury Road', '2015-05-15 00:00:00.000000', 6, 'In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler to save a group of female prisoners.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377759/film-posters/itdqi4r0mzvnymxgyitt.webp', 'https://youtu.be/hEJnMQG9ev8', '2015-05-01 23:00:00.000000', '2025-10-25 08:00:00.003542', 0),
-(43, 'Knives Out', '2019-11-27 00:00:00.000000', 7, 'A detective investigates the death of a wealthy crime novelist.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377778/film-posters/x2qj6u38xk3dljv6zbij.webp', 'https://youtu.be/qGqiHJTsRkQ', '2019-10-01 08:00:00.000000', '2025-10-25 08:00:22.290558', 0),
-(44, 'The Shape of Water', '2017-12-01 00:00:00.000000', 7, 'A mute cleaning lady forms an unlikely relationship with an aquatic creature.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377804/film-posters/qdkkifr4pdxayqhumelx.webp', 'https://youtu.be/XFYWazblaUA', '2017-11-01 09:00:00.000000', '2025-10-25 08:00:39.834401', 0),
-(45, 'Jaws', '1975-06-20 00:00:00.000000', 15, 'A police chief, a marine scientist, and a grizzled shark hunter try to kill a massive great white shark.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377819/film-posters/kfp8ibbigpqq3hztsjn3.webp', 'https://youtu.be/U1fu_sA7XhE', '2015-02-10 10:00:00.000000', '2025-10-25 08:00:57.708120', 0),
-(46, 'Minari', '2020-02-26 00:00:00.000000', 10, 'A Korean-American family moves to an Arkansas farm in search of their own American Dream.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377836/film-posters/bixn5girbzejizo5afdb.webp', 'https://youtu.be/KQ0gFidlro8', '2020-01-01 11:00:00.000000', '2025-10-25 08:01:16.228127', 0),
-(47, 'The Babadook', '2014-05-22 00:00:00.000000', 12, 'A single mother must confront a monster from a children\'s book.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377853/film-posters/vydtl13xsbew1hhcegr8.webp', 'https://youtu.be/k5WQZzDRVtw', '2015-03-20 12:00:00.000000', '2025-10-25 08:01:36.533476', 0),
-(48, 'Finding Nemo', '2003-05-30 00:00:00.000000', 14, 'After his son is captured, a timid clownfish embarks on a journey to bring him home.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377867/film-posters/tqaje8eldefjlsqo4edz.webp', 'https://youtu.be/9oQ628Seb9w', '2016-03-01 13:00:00.000000', '2025-10-25 08:02:01.908159', 0),
-(49, 'V For Vendetta', '2006-03-17 00:00:00.000000', 10, 'In a totalitarian future society, a freedom fighter known only as V uses terrorist tactics to fight against his oppressors.', 'https://res.cloudinary.com/dgqhpcdxj/image/upload/v1761377885/film-posters/pljbbtboqi8liwzfqkig.webp', 'https://youtu.be/lSA7mAHolAw', '2015-01-10 14:00:00.000000', '2025-10-25 08:02:21.375056', 0),
-(50, 'Soft Deleted Film', '2018-01-01 00:00:00.000000', 1, 'This is a film that has been soft-deleted.', 'http://dummy.com/poster/deleted.jpg', 'http://dummy.com/trailer/deleted.mp4', '2018-01-01 08:00:00.000000', '2023-01-01 08:00:00.000000', 1);
 
---
--- Dumping data for table `genres`
---
-
-INSERT INTO `genres` (`Id`, `Name`, `isDeleted`) VALUES
-(1, 'Action', 0),
-(2, 'Drama', 0),
-(3, 'Comedy', 0),
-(4, 'Romance', 0),
-(5, 'Sci-Fi', 0),
-(6, 'Thriller', 0),
-(7, 'Documentary', 0),
-(8, 'Animation', 0),
-(9, 'Horror', 0),
-(10, 'Crime', 0),
-(11, 'Fantasy', 0),
-(12, 'Biography', 0);
 
 --
 -- Dumping data for table `refeshtokens`
@@ -777,61 +838,7 @@ INSERT INTO `reviews` (`Id`, `AccountId`, `MovieId`, `Rating`, `Favorites`, `Com
 (199, 6, 28, 9, 1, 'Classic South Korean cinema.', '2025-11-13 10:00:00.000000', NULL, 0),
 (200, 7, 50, 1, 0, 'This film was bad, and it got deleted anyway. (Soft-deleted film review)', '2023-01-02 08:00:00.000000', NULL, 0);
 
---
--- Dumping data for table `users`
---
 
-INSERT INTO `users` (`Id`, `Email`, `FullName`, `CreatedAt`, `UpdatedAt`, `isDeleted`) VALUES
-(1, 'nguyen.vana@example.com', 'Nguyễn Văn An', '2020-01-15 10:00:00.000000', NULL, 0),
-(2, 'tran.thib@example.com', 'Trần Thị Bình', '2020-03-20 11:30:00.000000', '2023-11-01 15:45:00.000000', 0),
-(3, 'le.hcc@example.com', 'Lê Hữu Cảnh', '2021-06-01 08:00:00.000000', NULL, 0),
-(4, 'pham.thuyd@example.com', 'Phạm Thúy Duyên', '2021-11-10 14:20:00.000000', '2024-05-15 09:10:00.000000', 0),
-(5, 'hoang.mte@example.com', 'Hoàng Minh Tuấn Em', '2022-01-25 09:45:00.000000', NULL, 0),
-(6, 'david.lee@example.com', 'David Lee', '2022-04-12 16:00:00.000000', NULL, 0),
-(7, 'anna.kim@example.com', 'Anna Kim', '2022-08-05 17:30:00.000000', '2024-01-20 11:00:00.000000', 0),
-(8, 'ngov.f@example.com', 'Ngô Văn F', '2023-02-28 12:00:00.000000', NULL, 0),
-(9, 'dinh.gt@example.com', 'Đinh Giao Thúy', '2023-05-18 13:40:00.000000', NULL, 0),
-(10, 'john.smith@example.com', 'John Smith', '2023-07-07 14:50:00.000000', '2024-09-01 10:30:00.000000', 0),
-(11, 'user11@example.com', 'User Eleven', '2023-09-01 10:00:00.000000', NULL, 0),
-(12, 'user12@example.com', 'User Twelve', '2023-09-15 11:00:00.000000', NULL, 0),
-(13, 'user13@example.com', 'User Thirteen', '2023-10-01 12:00:00.000000', NULL, 0),
-(14, 'user14@example.com', 'User Fourteen', '2023-10-15 13:00:00.000000', NULL, 0),
-(15, 'user15@example.com', 'User Fifteen', '2023-11-01 14:00:00.000000', NULL, 0),
-(16, 'user16@example.com', 'User Sixteen', '2023-11-15 15:00:00.000000', NULL, 0),
-(17, 'user17@example.com', 'User Seventeen', '2023-12-01 16:00:00.000000', NULL, 0),
-(18, 'user18@example.com', 'User Eighteen', '2023-12-15 17:00:00.000000', NULL, 0),
-(19, 'user19@example.com', 'User Nineteen', '2024-01-01 18:00:00.000000', NULL, 0),
-(20, 'user20@example.com', 'User Twenty', '2024-01-15 19:00:00.000000', NULL, 0),
-(21, 'user21@example.com', 'User Twenty-One', '2024-02-01 20:00:00.000000', NULL, 0),
-(22, 'user22@example.com', 'User Twenty-Two', '2024-02-15 21:00:00.000000', NULL, 0),
-(23, 'user23@example.com', 'User Twenty-Three', '2024-03-01 22:00:00.000000', NULL, 0),
-(24, 'user24@example.com', 'User Twenty-Four', '2024-03-15 23:00:00.000000', NULL, 0),
-(25, 'user25@example.com', 'User Twenty-Five', '2024-04-01 08:00:00.000000', NULL, 0),
-(26, 'user26@example.com', 'User Twenty-Six', '2024-04-15 09:00:00.000000', NULL, 0),
-(27, 'user27@example.com', 'User Twenty-Seven', '2024-05-01 10:00:00.000000', NULL, 0),
-(28, 'user28@example.com', 'User Twenty-Eight', '2024-05-15 11:00:00.000000', NULL, 0),
-(29, 'user29@example.com', 'User Twenty-Nine', '2024-06-01 12:00:00.000000', NULL, 0),
-(30, 'user30@example.com', 'User Thirty', '2024-06-15 13:00:00.000000', NULL, 0),
-(31, 'user31@example.com', 'User Thirty-One', '2024-07-01 14:00:00.000000', NULL, 0),
-(32, 'user32@example.com', 'User Thirty-Two', '2024-07-15 15:00:00.000000', NULL, 0),
-(33, 'user33@example.com', 'User Thirty-Three', '2024-08-01 16:00:00.000000', NULL, 0),
-(34, 'user34@example.com', 'User Thirty-Four', '2024-08-15 17:00:00.000000', NULL, 0),
-(35, 'user35@example.com', 'User Thirty-Five', '2024-09-01 18:00:00.000000', NULL, 0),
-(36, 'user36@example.com', 'User Thirty-Six', '2024-09-15 19:00:00.000000', NULL, 0),
-(37, 'user37@example.com', 'User Thirty-Seven', '2024-10-01 20:00:00.000000', NULL, 0),
-(38, 'user38@example.com', 'User Thirty-Eight', '2024-10-15 21:00:00.000000', NULL, 0),
-(39, 'user39@example.com', 'User Thirty-Nine', '2024-11-01 22:00:00.000000', NULL, 0),
-(40, 'user40@example.com', 'User Forty', '2024-11-15 23:00:00.000000', NULL, 0),
-(41, 'user41@example.com', 'User Forty-One', '2024-12-01 08:00:00.000000', NULL, 0),
-(42, 'user42@example.com', 'User Forty-Two', '2025-01-01 09:00:00.000000', NULL, 0),
-(43, 'user43@example.com', 'User Forty-Three', '2025-01-15 10:00:00.000000', NULL, 0),
-(44, 'user44@example.com', 'User Forty-Four', '2025-02-01 11:00:00.000000', NULL, 0),
-(45, 'user45@example.com', 'User Forty-Five', '2025-02-15 12:00:00.000000', NULL, 0),
-(46, 'user46@example.com', 'User Forty-Six', '2025-03-01 13:00:00.000000', NULL, 0),
-(47, 'user47@example.com', 'User Forty-Seven', '2025-03-15 14:00:00.000000', NULL, 0),
-(48, 'user48@example.com', 'User Forty-Eight', '2025-04-01 15:00:00.000000', NULL, 0),
-(49, 'user49@example.com', 'User Forty-Nine', '2025-04-15 16:00:00.000000', NULL, 0),
-(50, 'deleted.user@example.com', 'Deleted User', '2020-01-01 08:00:00.000000', '2023-01-01 08:00:00.000000', 1);
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
