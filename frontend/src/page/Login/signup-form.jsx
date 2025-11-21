@@ -50,7 +50,7 @@ export function SignupForm() {
       console.log("[v0] User created with ID:", userId)
 
       console.log("[v0] Creating account...")
-      const accountRes = await axios.post("http://localhost:5003/api/account", {
+      const accountRes = await axios.post("http://localhost:5003/api/account/user", {
         userId,
         username,
         passwordHash: password,

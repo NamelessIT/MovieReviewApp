@@ -47,6 +47,16 @@ namespace backend.Controllers
             await _accountRepository.CreateAccount(account);
             return CreatedAtAction(nameof(GetAccountById), new { id = account.Id }, account);
         }
+        [HttpPost("user")]
+        public async Task<IActionResult> CreateAccountUser([FromBody] RegisterDTO registerDto)
+        {
+            if (registerDto == null)
+            {
+                return BadRequest();
+            }
+            await _accountRepository.CreateAccountUser(registerDto);
+            return CreatedAtAction(nameof(GetAccountById), registerDto);
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAccount(int id, [FromBody] AccountAdminDTO account)

@@ -52,7 +52,7 @@ export default function AuthPage() {
         })
         const newUserId = userRes.data.id
         // ✅ 2. Tạo account liên kết user vừa tạo
-        const accRes = await axios.post("http://localhost:5003/api/account", {
+        const accRes = await axios.post("http://localhost:5003/api/account/user", {
           username: formData.username,
           password: formData.password,
           userId: newUserId,

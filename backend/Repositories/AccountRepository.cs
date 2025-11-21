@@ -135,6 +135,19 @@ namespace MovieReviewApp.backend.Repositories
             await _context.Set<Account>().AddAsync(newAccount);
             await _context.SaveChangesAsync();
         }
+        public async Task CreateAccountUser(RegisterDTO registerDto)
+        {
+            var newAccount = new Account
+            {
+                UserId = registerDto.UserId,
+                Username = registerDto.UserName,
+                Role = "User", // Mặc định là User
+                isDeleted = false,
+                PasswordHash = registerDto.Password
+            };
+            await _context.Set<Account>().AddAsync(newAccount);
+            await _context.SaveChangesAsync();
+        }
 
         // Lấy danh sách người dùng chưa có tài khoản
         public async Task<List<AccountUserDTO>> GetUsersWithoutAccountsAsync()
