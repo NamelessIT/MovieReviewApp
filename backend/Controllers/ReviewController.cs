@@ -115,7 +115,6 @@ namespace backend.Controllers
                         r.MovieId,
                         r.Favorites,
                         r.Rating,
-                        r.Comment,
                         r.CreatedAt,
                         r.UpdatedAt
                     }),

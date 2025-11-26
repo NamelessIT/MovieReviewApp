@@ -233,6 +233,7 @@ namespace MovieReviewApp.backend.Repositories
             else if (string.IsNullOrEmpty(latestReview.Comment))
             {
                 latestReview.Favorites = favorites;
+                latestReview.CreatedAt = DateTime.Now;
                 latestReview.UpdatedAt = DateTime.Now;
             }
             else
@@ -256,15 +257,21 @@ namespace MovieReviewApp.backend.Repositories
         // ✅ 5. Lấy danh sách phim yêu thích (chỉ lấy review mới nhất theo MovieId + AccountId)
         public async Task<List<Review>> GetAllFavoritesReviewsAsync(int accountId)
         {
-            // Lọc review yêu thích (Favorites = true, chưa xóa)
-            var favoriteReviews = await _context.Reviews
-                .Where(r => r.AccountId == accountId && r.Favorites == true && !r.isDeleted)
-                .GroupBy(r => r.MovieId) // nhóm theo phim
-                .Select(g => g.OrderByDescending(r => r.CreatedAt).First()) // lấy review mới nhất
+            // 1️⃣ Lấy review mới nhất của mỗi MovieId cho user này
+            var latestReviews = await _context.Reviews
+                .Where(r => r.AccountId == accountId && !r.isDeleted)
+                .GroupBy(r => r.MovieId)
+                .Select(g => g.OrderByDescending(r => r.CreatedAt).First())
                 .ToListAsync();
 
-            return favoriteReviews;
+            // 2️⃣ Chỉ giữ review có Favorites = true
+            var favorites = latestReviews
+                .Where(r => r.Favorites == true)
+                .ToList();
+
+            return favorites;
         }
+
 
         // ✅ 3. Comment — tạo hoặc cập nhật, nếu có comment mới thì luôn tạo bản ghi mới
         public async Task<Review> CreateOrUpdateCommentAsync(int accountId, int filmId, string comment)

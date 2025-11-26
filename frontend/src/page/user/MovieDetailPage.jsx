@@ -147,7 +147,7 @@ export default function MovieDetailPage() {
     try {
       const res = await axios.get(`/Review/film/${id}/pagination?pageNumber=${page}&pageSize=${reviewsPageSize}`)
       const paged = res?.data?.data
-      const reviewsData = paged?.Data || []
+      const reviewsData = paged?.data || []
 
       // Map backend DTO fields to what the UI expects (accountName lower-case)
       const reviewsMapped = reviewsData.map(r => ({
