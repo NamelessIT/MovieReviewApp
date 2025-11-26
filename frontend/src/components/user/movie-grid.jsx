@@ -21,7 +21,7 @@ import Swal from "sweetalert2"
  * @property {boolean} [showViewAll]
  */
 
-export function MovieGrid({ title, showViewAll = true ,onFavoritesChange, favoritesUpdated}) {
+export function MovieGrid({ title, onFavoritesChange, favoritesUpdated}) {
   const navigate = useNavigate()
   const [allMovies, setAllMovies] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -262,19 +262,9 @@ useEffect(() => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-foreground">
+          <h2 className="text-2xl font-bold text-foreground text-White">
             {title} <span className="text-muted-foreground text-lg">({allMovies.length} films)</span>
           </h2>
-          {showViewAll && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="view-all-button"
-              onClick={() => navigate("/user/movies")}
-            >
-              View All
-            </Button>
-          )}
         </div>
 
         {/* Movie grid */}
