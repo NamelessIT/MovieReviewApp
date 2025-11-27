@@ -280,7 +280,7 @@ namespace MovieReviewApp.backend.Repositories
 
             if (latestReview == null)
             {
-                // ➕ Tạo mới
+                // ➕ Case 1: chưa có review nào → tạo mới
                 var newReview = new Review
                 {
                     AccountId = accountId,
@@ -292,27 +292,38 @@ namespace MovieReviewApp.backend.Repositories
                     UpdatedAt = DateTime.Now
                 };
                 await _context.Reviews.AddAsync(newReview);
-            }
-            else
-            {
-                // 🆕 Luôn tạo mới khi có comment mới
-                var newReview = new Review
-                {
-                    AccountId = accountId,
-                    MovieId = filmId,
-                    Rating = latestReview.Rating,
-                    Favorites = latestReview.Favorites,
-                    Comment = comment,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-                };
-                await _context.Reviews.AddAsync(newReview);
+                await _context.SaveChangesAsync();
+                return newReview;
             }
 
+            if (string.IsNullOrEmpty(latestReview.Comment))
+            {
+                // ✏️ Case 2: review mới nhất chưa có comment → update vào review này
+                latestReview.Comment = comment;
+                latestReview.UpdatedAt = DateTime.Now;
+
+                _context.Reviews.Update(latestReview);
+                await _context.SaveChangesAsync();
+                return latestReview;
+            }
+
+            // 🆕 Case 3: review mới nhất ĐÃ CÓ comment → tạo bản ghi mới
+            var newCommentReview = new Review
+            {
+                AccountId = accountId,
+                MovieId = filmId,
+                Rating = latestReview.Rating,
+                Favorites = latestReview.Favorites,
+                Comment = comment,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            await _context.Reviews.AddAsync(newCommentReview);
             await _context.SaveChangesAsync();
-            return await GetLatestReviewAsync(accountId, filmId)
-                ?? throw new Exception("Error saving review comment.");
+            return newCommentReview;
         }
+
 
 
         // ✅ 5. Tính điểm trung bình (chỉ lấy rating của review mới nhất mỗi AccountId)
