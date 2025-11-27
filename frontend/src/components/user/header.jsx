@@ -111,11 +111,12 @@ export function Header() {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="header-menu-btn"
+            className="header-menu-btn flex items-center gap-2 w-auto px-4 text-white "
             onClick={() => navigate("/user/movies")}
           >
-            <Film className="h-5 w-5 mr-2" />
-            <span className="hidden md:inline">Danh sách phim</span>
+            {/* <Film className="h-5 w-5 mr-2" /> */}
+            <i className="bi bi-film"></i>
+            <span className="hidden md:inline whitespace-nowrap">Danh sách phim</span>
           </Button>
         </div>
 
